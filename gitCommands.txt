@@ -1,4 +1,6 @@
 Linux:
+cd /home/umakant/myCodes
+git pull https://github.com/UmakantKulkarni/myCodes/
 git add README.md
 git commit -m "first commit"
 git remote add origin https://github.com/UmakantKulkarni/myCodes.git
@@ -7,3 +9,7 @@ git push -u origin master
 Windows:
 cd /s/SHREYAS/myCodes/
 git pull https://github.com/UmakantKulkarni/myCodes/
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/UmakantKulkarni/myCodes.git
+git push -u origin master
