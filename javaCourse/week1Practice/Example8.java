@@ -17,7 +17,7 @@ class Example8 {
       System.out.println("\nEnter choice (1,2,3), or \'q\' to quit, then press <enter>.");
       //inChar = scanner.next().charAt(0) ;
       expr = scanner.nextLine();
-      System.out.println("String is " + expr);
+      System.out.println("Your Input " + expr);
 
       int length2 = expr.length();  
 
@@ -28,7 +28,7 @@ class Example8 {
 
       if (length2 == 1) {
 
-        System.out.println("lnth is 1");
+        //System.out.println("lnth is 1");
         inChar = expr.charAt(0) ;      
                    
           switch (inChar) {
@@ -44,27 +44,25 @@ class Example8 {
               break;
             case '2':
               System.out.println("You selected option 2");
-              // Converting the input into an integer and printing it
-              System.out.println("Input char before conversion to integer: " + inChar);
-              int inCharIntForm  = (int) inChar;
-              System.out.println("Input  char after conversion to integer: " + inCharIntForm);
+              System.out.println("Input character before conversion to integer: " + inChar);
+              int charToInt  = (int) inChar;
+              System.out.println("Output character after conversion to integer: " + charToInt);
               break;  
             case '3':
               System.out.println("You selected option 3");
-              // Displaying the last three inputs
-              System.out.println("Displaying the last three inputs (from oldest to latest): ");
+              System.out.println("Input History from oldest to latest upto 3 entries: ");
               for (int i = 1; i < inputHistory.length; i++) {
                 System.out.println (inputHistory[i]);
               }
               break;
-            case 'q': break;
+            case 'q':
+              break;
             default:
               System.out.println("Invalid Input: " + inChar);
               break;
           }
-
       } else {
-        System.out.println("length is " + length2);
+        //System.out.println("length  is " + length2);
         if ("ukul".equals(expr)) {
           System.out.println("Password Accepted");
         } else {
