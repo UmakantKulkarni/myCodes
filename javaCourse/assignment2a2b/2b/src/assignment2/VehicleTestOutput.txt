@@ -1,0 +1,20 @@
+Minivan: Volvo S80 -
+Passenger Capacity = 4
+Fuel Capacity = 70
+Kilometers Per Litre = 8.08
+Make = Volvo
+Model = S80
+Model Year = 2006
+License Plate Number = VBG 984
+Range = 565.6km
+
+
+Sportscar: Lamborghini Gallardo -
+Passenger Capacity = 2
+Fuel Capacity = 48
+Kilometers Per Litre = 5.0
+Make = Lamborghini
+Model = Gallardo
+Model Year = 2010
+License Plate Number = VB6 999
+Range = 240.0km
