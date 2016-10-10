@@ -1,8 +1,9 @@
+package assignment3 ;
 /**
  * CSYE 6200 Vehicle starter class
  * 
- * @author (your name here)
- * ID: (your ID here)
+ * @author Umakant Kulkarni
+ * ID: 001685850
  *
  */
 public class Vehicle {
@@ -43,8 +44,7 @@ public class Vehicle {
 
 @Override
 public String toString() {
-	return make + " " + model + "\n[\nPassenger Capacity = " + passengers + " \nFuel Capacity = " + fuelCap + " \nKilometers Per Litre = " + kpl + " \nMake = " + make
-			+ " \nModel = " + model + " \nModel Year = " + modelYear + " \nLicense Plate Number = " + licensePlate + "\nRange = " + vehicleRange() + "km\n]";
+	return make + " " + model + " -\nPassenger Capacity = " + passengers + " \nFuel Capacity = " + fuelCap + " \nKilometers Per Litre = " + kpl + " \nMake = " + make
+			+ " \nModel = " + model + " \nModel Year = " + modelYear + " \nLicense Plate Number = " + licensePlate + "\nRange = " + vehicleRange() + "km\n\n";
 }
-
 }
