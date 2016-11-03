@@ -1,0 +1,42 @@
+Maruti 800 -
+Passenger Capacity = 4 
+Fuel Capacity = 35 
+Kilometers Per Litre = 19.0 
+Make = Maruti 
+Model = 800 
+Model Year = 1983 
+License Plate Number = KLU 287
+Range = 665.0 km
+
+Volvo S80 -
+Passenger Capacity = 4 
+Fuel Capacity = 70 
+Kilometers Per Litre = 8.08 
+Make = Volvo 
+Model = S80 
+Model Year = 2006 
+License Plate Number = VBG984
+Range = 565.6 km
+
+Mercedes FuelDuel -
+Passenger Capacity = 2 
+Fuel Capacity = 462 
+Kilometers Per Litre = 3.44 
+Make = Mercedes 
+Model = FuelDuel 
+Model Year = 2016 
+License Plate Number = GER 514
+Range = 1589.28 km
+
+Area of Cargo = 4.125 meter squared 
+
+Lamborghini Gallardo -
+Passenger Capacity = 2 
+Fuel Capacity = 48 
+Kilometers Per Litre = 5.0 
+Make = Lamborghini 
+Model = Gallardo 
+Model Year = 2010 
+License Plate Number = VB6 999
+Range = 240.0 km
+

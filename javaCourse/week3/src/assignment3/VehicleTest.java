@@ -1,6 +1,6 @@
 package assignment3;
 /**
- * CSYE 6200 Assignment #2 starter file
+ * CSYE 6200 Assignment #3 starter file
  */
 
 /**

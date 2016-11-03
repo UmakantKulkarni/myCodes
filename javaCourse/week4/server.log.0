@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545372</millis>
+  <sequence>0</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>Constructing a VehicleRegistry Private/Default constructor
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545421</millis>
+  <sequence>1</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>getInstance</method>
+  <thread>1</thread>
+  <message>Constructing a VehicleRegistry Instance
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545427</millis>
+  <sequence>2</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Maruti 800 -
+Passenger Capacity = 4 
+Fuel Capacity = 35 
+Kilometers Per Litre = 19.0 
+Make = Maruti 
+Model = 800 
+Model Year = 1983 
+License Plate Number = KLU287
+Range = 665.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545429</millis>
+  <sequence>3</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicleToMap</method>
+  <thread>1</thread>
+  <message>Vehicle added to HashMap is :
+
+Maruti 800 -
+Passenger Capacity = 4 
+Fuel Capacity = 35 
+Kilometers Per Litre = 19.0 
+Make = Maruti 
+Model = 800 
+Model Year = 1983 
+License Plate Number = KLU287
+Range = 665.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545430</millis>
+  <sequence>4</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>getVehicle</method>
+  <thread>1</thread>
+  <message>Details of the recently added Vehicle (Output from 'get' command):
+
+Maruti 800 -
+Passenger Capacity = 4 
+Fuel Capacity = 35 
+Kilometers Per Litre = 19.0 
+Make = Maruti 
+Model = 800 
+Model Year = 1983 
+License Plate Number = KLU287
+Range = 665.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545431</millis>
+  <sequence>5</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Volvo S80 -
+Passenger Capacity = 4 
+Fuel Capacity = 70 
+Kilometers Per Litre = 8.08 
+Make = Volvo 
+Model = S80 
+Model Year = 2006 
+License Plate Number = VBG984
+Range = 565.6 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545433</millis>
+  <sequence>6</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicleToMap</method>
+  <thread>1</thread>
+  <message>Vehicle added to HashMap is :
+
+Volvo S80 -
+Passenger Capacity = 4 
+Fuel Capacity = 70 
+Kilometers Per Litre = 8.08 
+Make = Volvo 
+Model = S80 
+Model Year = 2006 
+License Plate Number = VBG984
+Range = 565.6 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545434</millis>
+  <sequence>7</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>getVehicle</method>
+  <thread>1</thread>
+  <message>Details of the recently added Vehicle (Output from 'get' command):
+
+Volvo S80 -
+Passenger Capacity = 4 
+Fuel Capacity = 70 
+Kilometers Per Litre = 8.08 
+Make = Volvo 
+Model = S80 
+Model Year = 2006 
+License Plate Number = VBG984
+Range = 565.6 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545435</millis>
+  <sequence>8</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini1 Gallardo1 -
+Passenger Capacity = 2 
+Fuel Capacity = 48 
+Kilometers Per Litre = 5.0 
+Make = Lamborghini1 
+Model = Gallardo1 
+Model Year = 2010 
+License Plate Number = XB1999
+Range = 240.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545437</millis>
+  <sequence>9</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicleToMap</method>
+  <thread>1</thread>
+  <message>Vehicle added to HashMap is :
+
+Lamborghini1 Gallardo1 -
+Passenger Capacity = 2 
+Fuel Capacity = 48 
+Kilometers Per Litre = 5.0 
+Make = Lamborghini1 
+Model = Gallardo1 
+Model Year = 2010 
+License Plate Number = XB1999
+Range = 240.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545439</millis>
+  <sequence>10</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini2 Gallardo2 -
+Passenger Capacity = 2 
+Fuel Capacity = 50 
+Kilometers Per Litre = 9.0 
+Make = Lamborghini2 
+Model = Gallardo2 
+Model Year = 2011 
+License Plate Number = NB2888
+Range = 450.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545440</millis>
+  <sequence>11</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini3 Gallardo3 -
+Passenger Capacity = 2 
+Fuel Capacity = 52 
+Kilometers Per Litre = 8.0 
+Make = Lamborghini3 
+Model = Gallardo3 
+Model Year = 2012 
+License Plate Number = HB3777
+Range = 416.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545441</millis>
+  <sequence>12</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini4 Gallardo4 -
+Passenger Capacity = 2 
+Fuel Capacity = 54 
+Kilometers Per Litre = 7.0 
+Make = Lamborghini4 
+Model = Gallardo4 
+Model Year = 2013 
+License Plate Number = WB4666
+Range = 378.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545444</millis>
+  <sequence>13</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini5 Gallardo5 -
+Passenger Capacity = 2 
+Fuel Capacity = 56 
+Kilometers Per Litre = 6.0 
+Make = Lamborghini5 
+Model = Gallardo5 
+Model Year = 2014 
+License Plate Number = TB5555
+Range = 336.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545446</millis>
+  <sequence>14</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini6 Gallardo6 -
+Passenger Capacity = 2 
+Fuel Capacity = 58 
+Kilometers Per Litre = 5.0 
+Make = Lamborghini6 
+Model = Gallardo6 
+Model Year = 2015 
+License Plate Number = OB6444
+Range = 290.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545447</millis>
+  <sequence>15</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini7 Gallardo7 -
+Passenger Capacity = 2 
+Fuel Capacity = 60 
+Kilometers Per Litre = 4.0 
+Make = Lamborghini7 
+Model = Gallardo7 
+Model Year = 2016 
+License Plate Number = SB7333
+Range = 240.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545449</millis>
+  <sequence>16</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini8 Gallardo8 -
+Passenger Capacity = 2 
+Fuel Capacity = 62 
+Kilometers Per Litre = 3.0 
+Make = Lamborghini8 
+Model = Gallardo8 
+Model Year = 2009 
+License Plate Number = LB8222
+Range = 186.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545450</millis>
+  <sequence>17</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini9 Gallardo9 -
+Passenger Capacity = 2 
+Fuel Capacity = 64 
+Kilometers Per Litre = 2.0 
+Make = Lamborghini9 
+Model = Gallardo9 
+Model Year = 2008 
+License Plate Number = BB0111
+Range = 128.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545451</millis>
+  <sequence>18</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>addVehicle</method>
+  <thread>1</thread>
+  <message>Vehicle to be added in the registry is :
+
+Lamborghini10 Gallardo10 -
+Passenger Capacity = 2 
+Fuel Capacity = 66 
+Kilometers Per Litre = 1.0 
+Make = Lamborghini10 
+Model = Gallardo10 
+Model Year = 2007 
+License Plate Number = AB0000
+Range = 66.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545453</millis>
+  <sequence>19</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Printing Vehicle List from Registry before deleting the Vehicle:
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545455</millis>
+  <sequence>20</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>printVehicleList</method>
+  <thread>1</thread>
+  <message>***********Vehicle List from Registry**********
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545459</millis>
+  <sequence>21</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>getVehicle</method>
+  <thread>1</thread>
+  <message>Details of the recently added Vehicle (Output from 'get' command):
+
+Lamborghini10 Gallardo10 -
+Passenger Capacity = 2 
+Fuel Capacity = 66 
+Kilometers Per Litre = 1.0 
+Make = Lamborghini10 
+Model = Gallardo10 
+Model Year = 2007 
+License Plate Number = AB0000
+Range = 66.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545462</millis>
+  <sequence>22</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>removeVehicle</method>
+  <thread>1</thread>
+  <message>Recent/Latest Vehicle Removed Succesfully! Deleted Vehicle:
+
+Lamborghini10 Gallardo10 -
+Passenger Capacity = 2 
+Fuel Capacity = 66 
+Kilometers Per Litre = 1.0 
+Make = Lamborghini10 
+Model = Gallardo10 
+Model Year = 2007 
+License Plate Number = AB0000
+Range = 66.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545463</millis>
+  <sequence>23</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Printing Vehicle List from Registry after deleting the Vehicle:
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545464</millis>
+  <sequence>24</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>printVehicleList</method>
+  <thread>1</thread>
+  <message>***********Vehicle List from Registry**********
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545467</millis>
+  <sequence>25</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>getVehicleFromMap</method>
+  <thread>1</thread>
+  <message>Vehicle retrieved from HashMap:
+
+Maruti 800 -
+Passenger Capacity = 4 
+Fuel Capacity = 35 
+Kilometers Per Litre = 19.0 
+Make = Maruti 
+Model = 800 
+Model Year = 1983 
+License Plate Number = KLU287
+Range = 665.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545468</millis>
+  <sequence>26</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>getVehicleFromMap</method>
+  <thread>1</thread>
+  <message>Vehicle retrieved from HashMap:
+
+Lamborghini1 Gallardo1 -
+Passenger Capacity = 2 
+Fuel Capacity = 48 
+Kilometers Per Litre = 5.0 
+Make = Lamborghini1 
+Model = Gallardo1 
+Model Year = 2010 
+License Plate Number = XB1999
+Range = 240.0 km
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545470</millis>
+  <sequence>27</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Printing Unsorted Vehicle List from Registry:
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545471</millis>
+  <sequence>28</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>printVehicleList</method>
+  <thread>1</thread>
+  <message>***********Vehicle List from Registry**********
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545476</millis>
+  <sequence>29</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>bubbleSort</method>
+  <thread>1</thread>
+  <message>Executing Bubble Sort method
+
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545478</millis>
+  <sequence>30</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Printing Sorted Vehicle list
+</message>
+</record>
+<record>
+  <date>2016-10-18T14:49:05</date>
+  <millis>1476816545479</millis>
+  <sequence>31</sequence>
+  <logger>edu.neu.csye6200.registry.VehicleRegistry</logger>
+  <level>INFO</level>
+  <class>edu.neu.csye6200.registry.VehicleRegistry</class>
+  <method>printVehicleList</method>
+  <thread>1</thread>
+  <message>***********Vehicle List from Registry**********
+</message>
+</record>
+</log>

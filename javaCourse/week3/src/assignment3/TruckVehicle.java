@@ -1,10 +1,10 @@
 package assignment3;
 /**
- * CSYE 6200 Assignment #3 starter file
+ * CSYE 6200 Assignment #3 
  */
 
 /**
- * A special class used to test the Vehicle class
+ * 
  * @author Umakant Kulkarni
  * ID: 001685850
  *
