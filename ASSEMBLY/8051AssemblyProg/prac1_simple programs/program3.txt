@@ -1,0 +1,38 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRACTI~3.ASM
+	Object File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRACTI~3.hex
+	List File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRACTI~3.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h	;assembler directive
+    2:	  0000	79 00		mov r1,#00h	;initialize counter
+    3:	  0002	78 50		mov r0,#50h	;access location where data is stored
+    4:	  0004	E2		movx a,@r0	;move data from external location to acc.
+    5:	  0005	13		up:rrc a	;rotate right data in acc through carry
+    6:	  0006	50 00		jnc down	;check for carry flag
+    7:	  0008	09		down:inc r1	;increment counter
+    8:	  0009	80 FA		sjmp up		;repeat till whole data is checked
+    9:				end		;assembler directive
+   10:
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

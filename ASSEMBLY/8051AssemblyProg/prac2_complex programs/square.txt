@@ -1,0 +1,33 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	D:\pk\pract2\square.asm
+	Object File:	D:\pk\pract2\square.hex
+	List File:	D:\pk\pract2\square.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h	;assembler directive
+    2:	  0000	79 50		mov r1,#50h 	;initialize memory locatn
+    3:	  0002	E7		mov a,@r1	;get data in acc.
+    4:	  0003	90 03 00	mov dptr,#sqr	;get the address of look up table in dptr
+    5:	  0006	93		movc a,@a+dptr	;reach to the squre(ans.) of given data
+    6:	  0007	F5 30		mov 30h,a	;store result at 30h
+    7:
+    8:
+    9:		N      0300	org 0300h	;assembler directive
+   10:	  0300	00 01 04 09	sqr : DB 00, 01, 04, 09,16,25,36,49,64,81,100;	;look up table
+	  0304	10 19 24 31
+	  0308	40 51 64
+   11:				end	;assembler directive

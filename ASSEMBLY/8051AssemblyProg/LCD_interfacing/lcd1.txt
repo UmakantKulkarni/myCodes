@@ -1,0 +1,93 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	D:\pk\pract4.asm
+	Object File:	D:\pk\pract4.hex
+	List File:	D:\pk\pract4.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h		;assembler directive
+    2:	  0000	02 00 30	ljmp main		;avoid overwriting IVT
+    3:		N      0030	org 0030h		;assembler directive
+    4:	  0030	74 38		main: mov a,#38h	;Initialize LCD
+    5:	  0032	11 72		acall cmnd		;call command routine
+    6:	  0034	11 88		acall delay		;call delay
+    7:	  0036	74 0F		mov a,#0fh		;display on cursor on
+    8:	  0038	11 72		acall cmnd		;call command routine
+    9:	  003A	11 88		acall delay		;call delay
+   10:	  003C	74 06		mov a,#06h		;shift cursor to right
+   11:	  003E	11 72		acall cmnd		;call command routine
+   12:	  0040	11 88		acall delay		;call delay
+   13:	  0042	74 80		mov a,#80h		;first line first character
+   14:	  0044	11 72		acall cmnd		;call command routine
+   15:	  0046	11 88		acall delay		;call delay
+   16:	  0048	74 50		mov a,#"P"		;display "P"
+   17:	  004A	11 7D		acall data1		;call data1 routine
+   18:	  004C	11 88		acall delay		;call delay
+   19:	  004E	74 56		mov a,#"V"		;display "V"
+   20:	  0050	11 7D		acall data1		;call data1 routine
+   21:	  0052	11 88		acall delay		;call delay
+   22:	  0054	74 47		mov a,#"G"		;display "G"
+   23:	  0056	11 7D		acall data1		;call data1 routine
+   24:	  0058	11 88		acall delay		;call delay
+   25:	  005A	74 C0		mov a,#0c0h		;second line first character
+   26:	  005C	11 72		acall cmnd		;call command routine
+   27:	  005E	11 88		acall delay		;call delay
+   28:	  0060	74 50		mov a,#"P"		;display "P"
+   29:	  0062	11 7D		acall data1		;call data1 routine
+   30:	  0064	11 88		acall delay		;call delay
+   31:	  0066	74 56		mov a,#"V"		;display "V"
+   32:	  0068	11 7D		acall data1		;call data1 routine
+   33:	  006A	11 88		acall delay		;call delay
+   34:	  006C	74 47		mov a,#"G"		;display "G"
+   35:	  006E	11 7D		acall data1		;call data1 routine
+   36:	  0070	11 88		acall delay		;call delay
+   37:
+   38:	  0072	F5 80		cmnd:mov p0,a		;move command code to p0
+   39:	  0074	C2 A3		clr p2.3		;clear RS(select command register)
+   40:	  0076	C2 A4		clr p2.4		;clear R/W pin (i.e.select write)
+   41:	  0078	D2 A5		setb p2.5		;set enable
+   42:	  007A	C2 A5		clr p2.5		;clear enable (provide high to low pulse to enable)
+   43:	  007C	22		ret			;return
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:
+   45:	  007D	F5 80		data1: mov p0,a		;move data to p0
+   46:	  007F	D2 A3		setb p2.3		;set RS bit(select data register)
+   47:	  0081	C2 A4		clr p2.4		;clear R/W pin(i.e. select write)
+   48:	  0083	D2 A5		setb p2.5		;set enable
+   49:	  0085	C2 A5		clr p2.5		;clear enable(provide high to low pulse to enable)
+   50:	  0087	22		ret			;return
+   51:
+   52:	  0088	78 FF		delay:mov r0,#0ffh	;move ffh to r0
+   53:	  008A	79 FF		here:mov r1,#0ffh	;move ffh to r1
+   54:	  008C	D9 FE		up:djnz r1,up		;decrement r1 and stay in loop till it is 0
+   55:	  008E	D8 FA		djnz r0,here		;decrement r0 and stay in loop till it is 0
+   56:	  0090	22		ret			;return
+   57:
+   58:				end			;assembler directive
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

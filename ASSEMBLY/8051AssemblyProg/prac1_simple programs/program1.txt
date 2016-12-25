@@ -1,0 +1,89 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\PRACTI~1.ASM
+	Object File:	C:\Users\PRACTI~1.hex
+	List File:	C:\Users\PRACTI~1.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h ; assembler directive
+    2:	  0000	78 50		mov r0,#50h;access location of first number
+    3:	  0002	E6		mov a,@r0;move first data to acc.
+    4:	  0003	08		inc r0;access location for second number
+    5:	  0004	86 F0		mov b,@r0;move second number in acc.
+    6:	  0006	25 F0		add a,b ; addition
+    7:	  0008	79 53		mov r1,#53h;access first location to store result
+    8:	  000A	F7		mov @r1,a ;store result of addition in 53h
+    9:
+   10:	  000B	18		dec r0;acess location of first number
+   11:	  000C	E6		mov a,@r0;move first data to acc.
+   12:	  000D	C3		clr c ; clear borrow
+   13:	  000E	95 F0		subb a,b;subtraction
+   14:	  0010	09		inc r1;acess next location to store result
+   15:	  0011	F7		mov @r1,a ;store result of subtraction in 54h
+   16:
+   17:	  0012	E6		mov a,@r0;move first data to acc.
+   18:	  0013	A4		mul ab;multiplication
+   19:	  0014	09		inc r1;access next location to store result
+   20:	  0015	F7		mov @r1,a;store lower byte at 55h
+   21:	  0016	09		inc r1;access next location to store result
+   22:	  0017	A7 F0		mov @r1,b;store higher byte at 56h
+   23:
+   24:	  0019	E6		mov a,@r0;move first data to acc.
+   25:	  001A	08		inc r0;acess location of second number
+   26:	  001B	86 F0		mov b,@r0;access location for second number
+   27:	  001D	84		div ab;division
+   28:	  001E	09		inc r1;access next location to store result
+   29:	  001F	F7		mov @r1,a;store quotient at 57h
+   30:	  0020	09		inc r1;access next location to store result
+   31:	  0021	A7 F0		mov @r1,b;store remainder at 58h
+   32:
+   33:	  0023	18		dec r0;access location for first number
+   34:	  0024	E6		mov a,@r0;move first data in accumulator
+   35:	  0025	08		inc r0;access location for second number
+   36:	  0026	86 F0		mov b,@r0;move second data in b reg.
+   37:	  0028	55 F0		anl a,b;anding operation
+   38:	  002A	09		inc r1;access next location to store result
+   39:	  002B	F7		mov @r1,a ;store result at 59h
+   40:
+   41:	  002C	18		dec r0;access location for first number
+   42:	  002D	E6		mov a,@r0;move first number in acc.
+   43:	  002E	08		inc r0;access location for second number
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  002F	86 F0		mov b,@r0;move second number in b reg
+   45:	  0031	65 F0		xrl a,b;ex-oring
+   46:	  0033	09		inc r1;acess next location to store result
+   47:	  0034	F7		mov @r1,a ;store result at 60h
+   48:
+   49:	  0035	18		dec r0;access location for first number
+   50:	  0036	E6		mov a,@r0;store first number in acc.
+   51:	  0037	F4		cpl a;compliment
+   52:	  0038	09		inc r1;access next location to store result
+   53:	  0039	F7		mov @r1,a ;store result at 61h
+   54:				end;assembler directive
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

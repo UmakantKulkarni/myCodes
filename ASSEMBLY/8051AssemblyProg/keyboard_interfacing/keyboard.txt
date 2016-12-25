@@ -1,0 +1,314 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\DOCUME~1\ADMINI~1\Desktop\OLDKEY1.ASM
+	Object File:	C:\DOCUME~1\ADMINI~1\Desktop\OLDKEY1.hex
+	List File:	C:\DOCUME~1\ADMINI~1\Desktop\OLDKEY1.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:					;FOR OLD KIT
+    2:					;FOR MICRONTROLLER WITH DIP PACKAGE.
+    3:		N      0040		PN EQU 40H
+    4:		N      0000		ORG 00H
+    5:	  0000	02 00 50		LJMP MAIN
+    6:
+    7:		N      0050		ORG 50H
+    8:	  0050	75 81 70	MAIN :  MOV SP,#70H
+    9:	  0053	12 00 73		LCALL LCDINIT
+   10:	  0056	74 80			MOV A,#80H
+   11:	  0058	12 00 97		LCALL COMMAND
+   12:	  005B	90 02 3A		MOV DPTR,#MSG1
+   13:	  005E	7F 0F			MOV R7,#0FH
+   14:	  0060	12 00 FE		LCALL DISPLAY
+   15:
+   16:	  0063	74 C0			MOV A,#0C0H
+   17:	  0065	12 00 97		LCALL COMMAND
+   18:	  0068	90 02 4A		MOV DPTR,#MSG2
+   19:	  006B	7F 0F			MOV R7,#0FH
+   20:	  006D	12 00 FE		LCALL DISPLAY
+   21:	  0070	02 01 07		LJMP K1
+   22:	  0073			LCDINIT :
+   23:	  0073	74 20			 MOV A,#20H
+   24:	  0075	12 00 97		 LCALL COMMAND
+   25:	  0078	74 28			 MOV A,#28H
+   26:	  007A	12 00 97		 LCALL COMMAND
+   27:	  007D	74 08			 MOV A,#08H
+   28:	  007F	12 00 97		 LCALL COMMAND
+   29:	  0082	74 01			 MOV A,#01H
+   30:	  0084	12 00 97		 LCALL COMMAND
+   31:	  0087	74 06			 MOV A,#06H
+   32:	  0089	12 00 97		 LCALL COMMAND
+   33:	  008C	74 0D			 MOV A,#0DH
+   34:	  008E	12 00 97		 LCALL COMMAND
+   35:	  0091	74 0C			 MOV A,#0CH
+   36:	  0093	12 00 97		 LCALL COMMAND
+   37:	  0096	22			 RET
+   38:
+   39:	  0097			COMMAND :
+   40:	  0097	12 00 BC		 LCALL READY
+   41:	  009A	C0 07			 PUSH 07H     ; STORE THE CONTENT OF R7
+   42:	  009C	FF			 MOV R7,A
+   43:	  009D	54 F0			 ANL A,#0F0H
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  009F	C4			 SWAP A
+   45:	  00A0	F5 80			 MOV P0,A
+   46:	  00A2	C2 84			 CLR P0.4  ;RS=0
+   47:	  00A4	C2 85			 CLR P0.5 ; W=0 WRITE
+   48:	  00A6	D2 86			 SETB P0.6 ;E=1
+   49:	  00A8	00			 NOP
+   50:	  00A9	C2 86			 CLR P0.6  ; E=0
+   51:	  00AB	EF			 MOV A,R7
+   52:	  00AC	54 0F			 ANL A,#0FH
+   53:	  00AE	F5 80			 MOV P0,A
+   54:	  00B0	C2 84			 CLR P0.4 ; R=0
+   55:	  00B2	C2 85			 CLR P0.5 ; W=0
+   56:	  00B4	D2 86			 SETB P0.6 ; E=1
+   57:	  00B6	00			 NOP
+   58:	  00B7	C2 86			 CLR P0.6
+   59:	  00B9	D0 07			 POP 07H
+   60:	  00BB	22			 RET
+   61:	  00BC			READY :
+   62:	  00BC	C0 E0			PUSH 0E0H
+   63:	  00BE	75 80 0F	WAIT :	MOV P0,#0FH
+   64:	  00C1	C2 86			CLR P0.6
+   65:	  00C3	C2 84			CLR P0.4
+   66:	  00C5	D2 85			SETB P0.5
+   67:	  00C7	D2 86			SETB P0.6
+   68:	  00C9	E5 80			MOV A,P0
+   69:	  00CB	C2 86			CLR P0.6
+   70:	  00CD	D2 86			SETB P0.6
+   71:	  00CF	00			NOP
+   72:	  00D0	00			NOP
+   73:	  00D1	C2 86			CLR P0.6
+   74:	  00D3	20 E3 E8		JB 0E3H,WAIT
+   75:	  00D6	D0 E0			POP 0E0H
+   76:	  00D8	22			RET
+   77:	  00D9			DATA1:
+   78:	  00D9	12 00 BC		 LCALL READY
+   79:	  00DC	C0 07			 PUSH 07H     ; STORE THE CONTENT OF R7
+   80:	  00DE	FF			 MOV R7,A
+   81:	  00DF	54 F0			 ANL A,#0F0H
+   82:	  00E1	C4			 SWAP A
+   83:	  00E2	F5 80			 MOV P0,A
+   84:	  00E4	D2 84			 SETB P0.4  ;RS=1
+   85:	  00E6	C2 85			 CLR P0.5 ; W=0 WRITE
+   86:	  00E8	D2 86			 SETB P0.6 ;E=1
+   87:	  00EA	00			 NOP
+   88:	  00EB	C2 86			 CLR P0.6  ; E=0
+   89:	  00ED	EF			 MOV A,R7
+   90:	  00EE	54 0F			 ANL A,#0FH
+   91:	  00F0	F5 80			 MOV P0,A
+   92:	  00F2	D2 84			 SETB P0.4 ; R=1
+   93:	  00F4	C2 85			 CLR P0.5 ; W=0
+   94:	  00F6	D2 86			 SETB P0.6 ; E=1
+   95:	  00F8	00			 NOP
+   96:	  00F9	C2 86			 CLR P0.6
+   97:	  00FB	D0 07			 POP 07H
+   98:	  00FD	22			 RET
+   99:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  00FE	E4		DISPLAY : CLR A
+  101:	  00FF	93			  MOVC A,@A+DPTR
+  102:	  0100	12 00 D9		  LCALL DATA1
+  103:	  0103	A3			  INC DPTR
+  104:	  0104	DF F8			  DJNZ R7, DISPLAY
+  105:	  0106	22			  RET
+  106:	  0107			K1 :
+  107:	  0107	75 B0 00		MOV P3,#00H         ; MAKE P3 AS INPUT PORT
+  108:	  010A	75 90 FF		MOV P1,#0FFH        ; MAKE P1 AS I/P PORT
+  109:	  010D	E5 90			MOV A,P1            ; STORE THE KEY STATUS IN A
+  110:	  010F	54 0F			ANL A,#0FH
+  111:	  0111	B4 0F F3		CJNE A,#0FH,K1      ; CHECK FOR ALL KEY RELEASED
+  112:	  0114			K2 :
+  113:	  0114	75 B0 00		MOV P3,#00H         ; MAKE P3 AS INPUT PORT
+  114:	  0117	75 90 FF		MOV P1,#0FFH        ; MAKE P1 AS I/P PORT
+  115:	  011A	E5 90			MOV A,P1            ; STORE THE KEY STATUS IN A
+  116:	  011C	54 0F			ANL A,#0FH
+  117:	  011E	B4 0F 02		CJNE A,#0FH,K3      ; CHECK FOR ANY KEY PRESSED
+  118:	  0121	21 14			AJMP K2
+  119:	  0123			K3 :
+  120:	  0123	12 02 21		LCALL DEBOUNCE      ; FOR DEBOUNCE CHECKING
+  121:	  0126	75 B0 00		MOV P3,#00H         ; MAKE P3 AS INPUT PORT
+  122:	  0129	75 90 FF		MOV P1,#0FFH        ; MAKE P1 AS I/P PORT
+  123:	  012C	E5 90			MOV A,P1            ; STORE THE KEY STATUS IN A
+  124:	  012E	54 0F			ANL A,#0FH
+  125:	  0130	B4 0F 02		CJNE A,#0FH,CHKCOL1      ; CHECK FOR ANY KEY PRESSED
+  126:	  0133	21 14			AJMP K2
+  127:	  0135			CHKCOL1 :                        ; CHECK COLOMUN 1 (0 4 8 C)
+  128:	  0135	D2 B1			SETB P3.1
+  129:	  0137	D2 B2			SETB P3.2
+  130:	  0139	D2 B3			SETB P3.3
+  131:	  013B	75 90 FF		MOV P1,#0FFH
+  132:	  013E	C2 B0			CLR P3.0
+  133:	  0140	20 90 09		JB P1.0,CHKCOL1R2
+  134:	  0143	75 40 30		MOV PN,#'0'
+  135:	  0146	12 02 2A		LCALL KEYOUT
+  136:	  0149	02 01 07		LJMP K1
+  137:	  014C			CHKCOL1R2 :
+  138:	  014C	20 91 09		    JB P1.1,CHKCOL1R3
+  139:	  014F	75 40 34		    MOV PN,#'4'
+  140:	  0152	12 02 2A		    LCALL KEYOUT
+  141:	  0155	02 01 07		    LJMP K1
+  142:
+  143:	  0158			CHKCOL1R3 :
+  144:	  0158	20 92 09		    JB P1.2,CHKCOL1R4
+  145:	  015B	75 40 38		    MOV PN,#'8'
+  146:	  015E	12 02 2A		    LCALL KEYOUT
+  147:	  0161	02 01 07		    LJMP K1
+  148:	  0164			CHKCOL1R4 :
+  149:	  0164	20 93 09		    JB P1.3,CHKCOL2
+  150:	  0167	75 40 43		    MOV PN,#'C'
+  151:	  016A	12 02 2A		    LCALL KEYOUT
+  152:	  016D	02 01 07		    LJMP K1
+  153:
+  154:	  0170			CHKCOL2  :
+  155:	  0170	D2 B0			SETB P3.0
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  0172	D2 B2			SETB P3.2
+  157:	  0174	D2 B3			SETB P3.3
+  158:	  0176	75 90 FF		MOV P1,#0FFH
+  159:	  0179	C2 B1			CLR P3.1
+  160:	  017B	20 90 09		JB P1.0,CHKCOL2R2
+  161:	  017E	75 40 31		MOV PN,#'1'
+  162:	  0181	12 02 2A		LCALL KEYOUT
+  163:	  0184	02 01 07		LJMP K1
+  164:	  0187			CHKCOL2R2 :
+  165:	  0187	20 91 09		    JB P1.1,CHKCOL2R3
+  166:	  018A	75 40 35		    MOV PN,#'5'
+  167:	  018D	12 02 2A		    LCALL KEYOUT
+  168:	  0190	02 01 07		    LJMP K1
+  169:
+  170:	  0193			CHKCOL2R3 :
+  171:	  0193	20 92 09		    JB P1.2,CHKCOL2R4
+  172:	  0196	75 40 39		    MOV PN,#'9'
+  173:	  0199	12 02 2A		    LCALL KEYOUT
+  174:	  019C	02 01 07		    LJMP K1
+  175:	  019F			CHKCOL2R4 :
+  176:	  019F	20 93 09		    JB P1.3,CHKCOL3
+  177:	  01A2	75 40 44		    MOV PN,#'D'
+  178:	  01A5	12 02 2A		    LCALL KEYOUT
+  179:	  01A8	02 01 07		    LJMP K1
+  180:	  01AB			CHKCOL3  :
+  181:	  01AB	D2 B0			SETB P3.0
+  182:	  01AD	D2 B1			SETB P3.1
+  183:	  01AF	D2 B3			SETB P3.3
+  184:	  01B1	75 90 FF		MOV P1,#0FFH
+  185:	  01B4	C2 B2			CLR P3.2
+  186:	  01B6	20 90 09		JB P1.0,CHKCOL3R2
+  187:	  01B9	75 40 32		MOV PN,#'2'
+  188:	  01BC	12 02 2A		LCALL KEYOUT
+  189:	  01BF	02 01 07		LJMP K1
+  190:	  01C2			CHKCOL3R2 :
+  191:	  01C2	20 91 09		    JB P1.1,CHKCOL3R3
+  192:	  01C5	75 40 36		    MOV PN,#'6'
+  193:	  01C8	12 02 2A		    LCALL KEYOUT
+  194:	  01CB	02 01 07		    LJMP K1
+  195:
+  196:	  01CE			CHKCOL3R3 :
+  197:	  01CE	20 92 09		    JB P1.2,CHKCOL3R4
+  198:	  01D1	75 40 41		    MOV PN,#'A'
+  199:	  01D4	12 02 2A		    LCALL KEYOUT
+  200:	  01D7	02 01 07		    LJMP K1
+  201:	  01DA			CHKCOL3R4 :
+  202:	  01DA	20 93 09		    JB P1.3,CHKCOL4
+  203:	  01DD	75 40 45		    MOV PN,#'E'
+  204:	  01E0	12 02 2A		    LCALL KEYOUT
+  205:	  01E3	02 01 07		    LJMP K1
+  206:	  01E6			CHKCOL4  :
+  207:	  01E6	D2 B0			SETB P3.0
+  208:	  01E8	D2 B1			SETB P3.1
+  209:	  01EA	D2 B2			SETB P3.2
+  210:	  01EC	75 90 FF		MOV P1,#0FFH
+  211:	  01EF	C2 B3			CLR P3.3
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+ Line  I  Addr  Code            Source
+
+  212:	  01F1	20 90 09		JB P1.0,CHKCOL4R2
+  213:	  01F4	75 40 33		MOV PN,#'3'
+  214:	  01F7	12 02 2A		LCALL KEYOUT
+  215:	  01FA	02 01 07		LJMP K1
+  216:	  01FD			CHKCOL4R2 :
+  217:	  01FD	20 91 09		    JB P1.1,CHKCOL4R3
+  218:	  0200	75 40 37		    MOV PN,#'7'
+  219:	  0203	12 02 2A		    LCALL KEYOUT
+  220:	  0206	02 01 07		    LJMP K1
+  221:
+  222:	  0209			CHKCOL4R3 :
+  223:	  0209	20 92 09		    JB P1.2,CHKCOL4R4
+  224:	  020C	75 40 42		    MOV PN,#'B'
+  225:	  020F	12 02 2A		    LCALL KEYOUT
+  226:	  0212	02 01 07		    LJMP K1
+  227:	  0215			CHKCOL4R4 :
+  228:	  0215	20 93 06		    JB P1.3,K0
+  229:	  0218	75 40 46		    MOV PN,#'F'
+  230:	  021B	12 02 2A		    LCALL KEYOUT
+  231:	  021E	02 01 07	K0:	    LJMP K1
+  232:
+  233:	  0221			DEBOUNCE:
+  234:	  0221	7A 32			 MOV R2,#50
+  235:	  0223	7B FA		HERE1 :	 MOV R3,#250
+  236:	  0225	DB FE		HERE  :  DJNZ R3,HERE
+  237:	  0227	DA FA			 DJNZ R2,HERE1
+  238:	  0229	22			 RET
+  239:	  022A			KEYOUT :
+  240:	  022A	74 0C			MOV A,#0CH
+  241:	  022C	12 00 97		LCALL COMMAND
+  242:	  022F	74 C4			MOV A,#0C4H
+  243:	  0231	12 00 97		LCALL COMMAND
+  244:	  0234	E5 40			MOV A,PN
+  245:	  0236	12 00 D9		LCALL DATA1
+  246:	  0239	22			RET
+  247:	  023A	4B 45 59 20	MSG1:  DB "KEY  PRESSED    "
+	  023E	20 50 52 45
+	  0242	53 53 45 44
+	  0246	20 20 20 20
+  248:	  024A	49 53 20 20	MSG2:  DB "IS                  "
+	  024E	20 20 20 20
+	  0252	20 20 20 20
+	  0256	20 20 20 20
+	  025A	20 20 20 20
+  249:				       END
+  250:
+  251:
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

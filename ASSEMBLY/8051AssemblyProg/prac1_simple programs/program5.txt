@@ -1,0 +1,41 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PR13D5~1.ASM
+	Object File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PR13D5~1.hex
+	List File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PR13D5~1.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h	;assembler directive
+    2:	  0000	7E 01		mov r6,#01h	;get the value of temp(degree celsius) in r6
+    3:	  0002	EE		mov a,r6	;move that data in acc
+    4:	  0003	75 F0 02	mov b,#02h	;move 02h in b reg
+    5:	  0006	A4		mul ab		;multiply a and b
+    6:	  0007	24 32		add a,#32h	;add 32h to the result(lower byte)
+    7:	  0009	F5 60		mov 60h,a	;store result at 60h
+    8:	  000B	E5 F0		mov a,b		;move higher byte of mul. result in acc
+    9:	  000D	34 00		addc a,#00h	;add 00h to higher byte along with carry
+   10:	  000F	F5 61		mov 61h,a	;store result at 61h
+   11:				end		;assembler directive
+   12:
+   13:
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

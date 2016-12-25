@@ -1,0 +1,49 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\Anuja\Desktop\degree\pvg\te\mca\pract2\DESCEN~1.ASM
+	Object File:	C:\Users\Anuja\Desktop\degree\pvg\te\mca\pract2\DESCEN~1.hex
+	List File:	C:\Users\Anuja\Desktop\degree\pvg\te\mca\pract2\DESCEN~1.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h		;assembler directive
+    2:		N      0070	arr equ 70h		;name the memory location 70h as arr
+    3:	  0000	79 70		l0:mov r1,#arr		;initialize first array
+    4:	  0002	78 70		    mov r0,#arr		;initialize second array
+    5:	  0004	7A 04		    mov r2,#04h		;initialize counter
+    6:	  0006	7B 00		    mov r3,#00h		;clear r3
+    7:	  0008	1A		    dec r2		;decrement counter
+    8:	  0009	E6		l1:mov a,@r0		;take first element from array
+    9:	  000A	F5 F0		    mov b,a		;move it to b reg
+   10:	  000C	09		    inc r1		;point next memory location
+   11:	  000D	97		    subb a,@r1		;subtract previous element and current element(data)
+   12:	  000E	50 06		    jnc l2		;jump if carry is not generated
+   13:	  0010	E5 F0		   mov a,b		;move data in b reg to acc
+   14:	  0012	C7		   xch a,@r1		;exchange acc contents with current array element(data)
+   15:	  0013	F6		   mov @r0,a		;move acc data in array
+   16:	  0014	7B 01		   mov r3,#01h		;mov 01 to r3
+   17:	  0016	08		l2:inc r0		;increment mem location
+   18:	  0017	DA F0		    djnz r2,l1		;decrement counter and repeat loop till it is zero
+   19:	  0019	BB 00 E4	    cjne r3,#00h,l0	;compare r3 contents with 00h and jump to loop 0 if they are not equal
+   20:	  001C	80 FE		    sjmp $		;
+   21:				end			;assembler directive
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

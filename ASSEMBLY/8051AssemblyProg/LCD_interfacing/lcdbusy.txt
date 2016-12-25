@@ -1,0 +1,76 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	D:\pk\pract4.asm
+	Object File:	D:\pk\pract4.hex
+	List File:	D:\pk\pract4.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h		;assembler directive
+    2:	  0000	02 00 30	ljmp main		;avoid overwriting IVT
+    3:		N      0030	org 0030h		;assembler directive
+    4:	  0030	74 38		main: mov a,#38h	;initialize lcd
+    5:	  0032	11 4C		acall cmnd		;call command rouutine
+    6:	  0034	74 0F		mov a,#0fh		;display on cursor on
+    7:	  0036	11 4C		acall cmnd		;call command routine
+    8:	  0038	74 06		mov a,#06h		;shift cursor to right
+    9:	  003A	11 4C		acall cmnd		;call command routine
+   10:	  003C	74 80		mov a,#80h		;first line first character
+   11:	  003E	11 4C		acall cmnd		;call command routine
+   12:	  0040	74 50		mov a,#"P"		;display "P"
+   13:	  0042	11 59		acall data1		;call data1 routine
+   14:	  0044	74 56		mov a,#"V"		;display "V"
+   15:	  0046	11 59		acall data1		;call data1 routine
+   16:	  0048	74 47		mov a,#"G"		;display "G"
+   17:	  004A	11 59		acall data1		;call data1 routine
+   18:
+   19:	  004C	11 66		cmnd:acall busy		;check busy flag(D7 bit)
+   20:	  004E	F5 80		mov p0,a		;move command code to p0
+   21:	  0050	C2 A3		clr p2.3		;clear RS pin(select command reg)
+   22:	  0052	C2 A4		clr p2.4		;clear R/W pin(select write operation)
+   23:	  0054	D2 A5		setb p2.5		;set enable pin
+   24:	  0056	C2 A5		clr p2.5		;clear  enable(high to low pulse )
+   25:	  0058	22		ret			;return
+   26:
+   27:	  0059	11 66		data1:acall busy	;check busy flag(D7 bit)
+   28:	  005B	F5 80		mov p0,a		;move data to p0
+   29:	  005D	D2 A3		setb p2.3		;set RS pin (select data reg.)
+   30:	  005F	C2 A4		clr p2.4		;clear R/W pin (select write operation)
+   31:	  0061	D2 A5		setb p2.5		;set enable pin
+   32:	  0063	C2 A5		clr p2.5		;clear enable(high to low pulse)
+   33:	  0065	22		ret			;return
+   34:
+   35:	  0066	D2 87		busy:setb p0.7		;set D7 bit
+   36:	  0068	C2 A3		clr p2.3		;clear RS pin(select command reg.)
+   37:	  006A	D2 A4		setb p2.4		;set R/W pin(select read operation)
+   38:	  006C	C2 A5		back:clr p2.5		;clear enable
+   39:	  006E	D2 A5		setb p2.5		;set enable(low to high pulse)
+   40:	  0070	20 87 F9	jb p0.7,back		;check for busy flag
+   41:	  0073	22		ret			;return
+   42:				end			;assembler directive
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+

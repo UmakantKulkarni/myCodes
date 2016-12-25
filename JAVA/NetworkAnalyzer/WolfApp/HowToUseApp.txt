@@ -1,0 +1,9 @@
+1) Enter the “<Protocol> Data Limit” in TCP/UDP/ICMP/HTTP TextFields. (in KBs)
+(Note: If you enter 500, then after surfing 500KB of data for that protocol, App will automatically terminate)
+
+2) See the Network Interfaces and corresponding IP Addresses; Enter the correct index (0 or Positive integer) of the particular Interface under NIF.
+(Index is nothing but the digit in square brackets like this - NIF[0], So you will enter 0 or something similar)
+
+3) Confirm the values and Hit start button; Once Start button is pressed all above fields get Uneditable and Packet Capture Starts.
+
+4) Functionality of other 3 buttons is as per Generalized Concept.

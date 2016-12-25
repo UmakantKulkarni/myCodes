@@ -1,0 +1,41 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+       
+
+	Source File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRACTI~2.ASM
+	Object File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRACTI~2.hex
+	List File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRACTI~2.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h       ;assembler directive
+    2:	  0000	E5 50		mov a,50h       ;get data from 50h into acc.
+    3:	  0002	85 53 F0	mov b,53h	;get data from 53h into acc.
+    4:	  0005	25 F0		add a,b	 	;add lower bytes
+    5:	  0007	F5 60		mov 60h,a	;store result at 60h
+    6:	  0009	E5 51		mov a,51h	;get higher byte of first number in acc.
+    7:	  000B	85 54 F0	mov b,54h	;get higher byte of second number in reg b
+    8:	  000E	35 F0		addc a,b	;add higher bytes with carry
+    9:	  0010	F5 61		mov 61h,a	;store result at 61h
+   10:	  0012	50 03		jnc down	;check for carry
+   11:	  0014	75 62 01	mov 62h,#01h	;if carry is generated then move 01h to 62h
+   12:	  0017	E5 F0		down:mov a,b    ;
+   13:				end		;assembler directive
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

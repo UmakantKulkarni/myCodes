@@ -1,0 +1,63 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	D:\pk\pract5.asm
+	Object File:	D:\pk\pract5.hex
+	List File:	D:\pk\pract5.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h		;assembler directive
+    2:	  0000	02 00 30	ljmp main		;avoid overwriting IVT
+    3:		N      0030	org 0030h		;assembler directive
+    4:	  0030	75 B0 C0	main:mov p3,#0c0h	;move code for '0'
+    5:	  0033	11 64		acall delay		;call delay
+    6:	  0035	75 B0 F9	mov p3,#0f9h		;move code for '1'
+    7:	  0038	11 64		acall delay		;call delay
+    8:	  003A	75 B0 A4	mov p3,#0a4h		;move code for '2'
+    9:	  003D	11 64		acall delay		;call delay
+   10:	  003F	75 B0 B0	mov p3,#0b0h		;move code for '3'
+   11:	  0042	11 64		acall delay		;call delay
+   12:	  0044	75 B0 99	mov p3,#99h		;move code for '4'
+   13:	  0047	11 64		acall delay		;call delay
+   14:	  0049	75 B0 92	mov p3,#92h		;move code for '5'
+   15:	  004C	11 64		acall delay		;call delay
+   16:	  004E	75 B0 82	mov p3,#82h		;move code for '6'
+   17:	  0051	11 64		acall delay		;call delay
+   18:	  0053	75 B0 D8	mov p3,#0d8h		;move code for '7'
+   19:	  0056	11 64		acall delay		;call delay
+   20:	  0058	75 B0 80	mov p3,#80h		;move code for '8'
+   21:	  005B	11 64		acall delay		;call delay
+   22:	  005D	75 B0 90	mov p3,#90h		;move code for '9'
+   23:	  0060	11 64		acall delay		;call delay
+   24:	  0062	80 CC		sjmp main		;keep doing
+   25:
+   26:	  0064	7B 0A		delay:mov r3,#0ah	;move 0ah to r3
+   27:	  0066	78 FF		agn:mov r0,#0ffh	;move ffh to r0
+   28:	  0068	79 FF		again:mov r1,#0ffh	;move ffh to r1
+   29:	  006A	D9 FE		up:djnz r1,up		;decrement r1 and stay in loop till it is zero
+   30:	  006C	D8 FA		djnz r0,again		;decrement r0 and stay in loop till it is zero
+   31:	  006E	DB F6		djnz r3,agn		;decrement r3 and stay in loop till it is zero
+   32:	  0070	22		ret			;return
+   33:				end			;assembler directive
+   34:
+   35:
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

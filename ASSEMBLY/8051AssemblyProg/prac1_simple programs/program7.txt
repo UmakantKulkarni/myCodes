@@ -1,0 +1,38 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PR786D~1.ASM
+	Object File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PR786D~1.hex
+	List File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PR786D~1.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h		;assembler directive
+    2:	  0000	78 30		mov r0,#30h		;access first location from where data is stored
+    3:	  0002	7A 07		mov r2,#07h		;initialize counter
+    4:	  0004	8A F0		mov b,r2		;mov the count(total number of data) in reg b
+    5:	  0006	74 00		mov a,#00h		;clear acc
+    6:	  0008	26		up:add a,@r0		;add data to acc
+    7:	  0009	08		inc r0			;increment source location
+    8:	  000A	DA FC		djnz r2,up		;decrement counter and keep adding data till the counter is zero
+    9:	  000C	84		div ab			;find average
+   10:				end			;assembler directive
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors

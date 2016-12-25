@@ -1,0 +1,45 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRCD91~1.ASM
+	Object File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRCD91~1.hex
+	List File:	C:\Users\Desktop\degree\pvg\te\mca\pk\1PRACT~1\PRCD91~1.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	org 0000h	;assembler directive
+    2:	  0000	74 95		mov a,#95h	;move lower byte of first data in acc.
+    3:	  0002	24 48		add a,#48h	;add lower byte of second data with it
+    4:	  0004	D4		da a		;decimal adjust for addition(make result BCD)
+    5:	  0005	F5 50		mov 50h,a	;store result at 50h
+    6:	  0007	74 77		mov a,#77h	;move middle byte of first data in acc.
+    7:	  0009	34 45		addc a,#45h	;add middle byte of second data with it along with carry
+    8:	  000B	D4		da a		;decimal adjust for addition(make result BCD)
+    9:	  000C	F5 51		mov 51h,a	;store result at 51h
+   10:	  000E	74 19		mov a,#19h	;move higher byte of first data in acc.
+   11:	  0010	34 34		addc a,#34h	;add middle byte of second data with it along with carry
+   12:	  0012	D4		da a		;decimal adjust for addition(make result BCD)
+   13:	  0013	F5 52		mov 52h,a	;store rsult at 52h
+   14:				end		;assembler directive
+   15:
+   16:
+   17:
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
