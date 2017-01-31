@@ -1,0 +1,13 @@
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\bin\Debug\Incubator Monitor.exe.config
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\bin\Debug\Incubator Monitor.exe
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\bin\Debug\Incubator Monitor.pdb
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator Monitor.csprojResolveAssemblyReference.cache
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\MainWindow.baml
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\MainWindow.g.cs
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\App.g.cs
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator Monitor_MarkupCompile.cache
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator Monitor.g.resources
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator_Monitor.Properties.Resources.resources
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator Monitor.csproj.GenerateResource.Cache
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator Monitor.exe
+C:\Users\Hrishikesh\Documents\Visual Studio 2013\Projects\Incubator Monitor\Incubator Monitor\obj\Debug\Incubator Monitor.pdb

@@ -1,0 +1,363 @@
+Incubator 1
+Temperature: 77
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 2
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 3
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 4
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 5
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 6
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 7
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 8
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 9
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 10
+Temperature: -1
+Pressure: -1
+Humidity: -1
+Hazardous Gases: -1
+Body Temp: -1
+------------------------------------------------------------------
+*******************************************************************************************
+*******************************************************************************************
+Timestamp: 07/08/2015 1:27:36 PM
+Incubator 1
+Temperature: 77
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 2
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 3
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 4
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 5
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 6
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 7
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 8
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 9
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 10
+Temperature: -1
+Pressure: -1
+Humidity: -1
+Hazardous Gases: -1
+Body Temp: -1
+------------------------------------------------------------------
+*******************************************************************************************
+*******************************************************************************************
+Timestamp: 07/08/2015 1:35:38 PM
+Incubator 1
+Temperature: 77
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 2
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 3
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 4
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 5
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 6
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 7
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 8
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 9
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 10
+Temperature: -1
+Pressure: -1
+Humidity: -1
+Hazardous Gases: -1
+Body Temp: -1
+------------------------------------------------------------------
+*******************************************************************************************
+*******************************************************************************************
+Timestamp: 07/08/2015 1:48:02 PM
+Incubator 1
+Temperature: 77
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 2
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 3
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 4
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 5
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 6
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 7
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 8
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 9
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 10
+Temperature: -1
+Pressure: -1
+Humidity: -1
+Hazardous Gases: -1
+Body Temp: -1
+------------------------------------------------------------------
+*******************************************************************************************
+*******************************************************************************************
+Timestamp: 07/08/2015 1:51:32 PM
+Incubator 1
+Temperature: 77
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 2
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 3
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 4
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 5
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 6
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 7
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 8
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 9
+Temperature: 35
+Pressure: 260
+Humidity: 56
+Hazardous Gases: 101
+Body Temp: 202
+------------------------------------------------------------------
+Incubator 10
+Temperature: -1
+Pressure: -1
+Humidity: -1
+Hazardous Gases: -1
+Body Temp: -1
+------------------------------------------------------------------
+*******************************************************************************************

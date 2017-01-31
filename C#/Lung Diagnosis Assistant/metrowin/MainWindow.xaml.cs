@@ -1,0 +1,346 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using MahApps.Metro.Controls;
+using MahApps.Metro;
+using System.Data.SQLite;
+using System.IO;
+using System.IO.Ports;
+using System.Management;
+using System.Management.Instrumentation;
+
+namespace metrowin
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : MetroWindow
+    {
+        public static string[] data;
+        public static SerialPort s;
+        public static SerialPort boardport;
+        public static string tlc_p;
+        public static string tv_p;
+        public static string fvc_p;
+        public static string irv_p;
+        public static string erv_p;
+        public static string iv_p;
+        public static string vc_p;
+        public static string ic_p;
+        public static string frc_p;
+        public static bool dready = false;
+        private static bool mailflag = false;
+        public MainWindow()
+        {
+            InitializeComponent();
+            try
+            {
+
+                string[] ports = SerialPort.GetPortNames();
+
+
+                string portnumber = autodetectport();
+                if(portnumber!=null)
+                s = new SerialPort(portnumber, 9600, Parity.None, 8, StopBits.One);
+                else { MessageBox.Show("No compatible devices found!\r\nPlease connect a compatible device and restart application!"); }
+                
+                
+
+
+
+
+            }
+
+
+            catch (SystemException exc) { MessageBox.Show("Device Not Connected Yet"); }
+
+        }
+
+        private static string autodetectport()
+        {
+            ManagementScope connectionScope = new ManagementScope();
+            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
+
+            try
+            {
+                foreach (ManagementObject item in searcher.Get())
+                {
+                    string desc = item["Description"].ToString();
+                    string deviceId = item["DeviceID"].ToString();
+
+                    if (desc.Contains("Arduino Due Programming Port"))
+                    {
+                        return deviceId;
+                    }
+                }
+            }
+            catch (ManagementException e)
+            {
+
+            }
+
+            return null;
+        }
+
+
+
+        public void addb_Click(object sender, RoutedEventArgs e)
+        {
+            
+
+
+
+            if (solbox.Text == "" || name.Text == "" || age.Text == "" || sex.Text == "" || Lname.Text == "" || tlcbox.Text == "" || tvbox.Text == "" || fvcbox.Text == "" || irvbox.Text == "" || ervbox.Text == "" || rvbox.Text == "" || vcbox.Text == "" || icbox.Text == "" || frcbox.Text == "")
+            {
+                MessageBox.Show("One or more text fields is empty\nPlease enter valid input");
+            }
+            else
+            {
+                string n_temp = name.Text;
+                string a_temp = age.Text;
+                string s_temp = sex.Text;
+                string l_temp = Lname.Text;
+                string tlc = tlcbox.Text;
+                string tv = tvbox.Text;
+                string fvc = fvcbox.Text;
+                string irv = irvbox.Text;
+                string erv = ervbox.Text;
+                string rv = rvbox.Text;
+                string vc = vcbox.Text;
+                string ic = icbox.Text;
+                string frc = frcbox.Text;
+                string sol = solbox.Text;
+                string fef25 = fef25box.Text;
+                string fef50 = fef50box.Text;
+                string fef75 = fef75box.Text;
+                string pef = pefbox.Text;
+                string mmef = mmefbox.Text;
+                string ror = rorbox.Text;
+                tlcbox.Text = "";
+                tvbox.Text = ""; fvcbox.Text = ""; irvbox.Text = ""; ervbox.Text = ""; rvbox.Text = ""; vcbox.Text = ""; icbox.Text = ""; frcbox.Text = "";
+                Lname.Text = ""; solbox.Text = ""; fef25box.Text = ""; fef50box.Text = ""; fef75box.Text = ""; pefbox.Text = ""; mmefbox.Text = ""; rorbox.Text = "";
+                string sql;
+                SQLiteConnection conn = new SQLiteConnection();
+                SQLiteCommand cmd = new SQLiteCommand();
+                if (!File.Exists("spdbfinal.sqlite"))
+                {
+                    SQLiteConnection.CreateFile("spdbfinal.sqlite");
+                    conn = new SQLiteConnection("Data Source=spdbfinal.sqlite;Version=3;");
+                    conn.Open();
+                    sql = "create table patient(id INTEGER PRIMARY KEY,name varchar(30),lastname varchar(30),age int,sex varchar,tlc double,tv double, fvc real, irv real, erv real, iv real, vc real, ic real, frc real,sol real,ror real,fef25 real ,fef50 real,fef75 real,pef real,mmef real)";
+                    cmd = new SQLiteCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    conn = new SQLiteConnection("Data Source=spdbfinal.sqlite;Version=3;");
+                    conn.Open();
+                }
+
+                sql = "insert into patient(id,name,lastname,age,sex,tlc,tv , fvc , irv , erv , iv , vc , ic , frc,sol,ror,fef25,fef50,fef75,pef,mmef) values (NULL,'" + n_temp + "'," + "'" + l_temp + "'," + a_temp + ",'" + s_temp + "','" + tlc + "'," + "'" + tv + "'," + "'" + fvc + "'," + "'" + irv + "'," + "'" + erv + "'," + "'" + rv + "'," + "'" + vc + "'," + "'" + ic + "'," + "'" + frc + "','" + sol + "','" + ror + "','" + fef25 + "','" + fef50 + "','" + fef75 + "','" + pef + "','" + mmef + "')";
+                cmd = new SQLiteCommand(sql, conn);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                name.Text = "";
+                age.Text = "";
+                sex.Text = "";
+            }
+            if (mailflag == false) { sendmail(); }
+        }
+
+        private void vw_Click(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            Window1 w = new Window1();
+            w.ShowDialog();
+
+            this.Visibility = Visibility.Visible;
+
+
+
+        }
+
+
+        public void sendmail()
+        {
+            int cnt = 0;
+            pref.body = "";
+            if (!File.Exists("spdbfinal.sqlite"))
+            {
+                MessageBox.Show("No database created");
+            }
+            else
+            {
+                SQLiteConnection conn = new SQLiteConnection("Data source=spdbfinal.sqlite;Version=3;");
+                conn.Open();
+                string sql = "select * from patient";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                SQLiteDataReader r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    
+                    
+                        pref.body += "Id :" + r["id"] + "\r\nName : " + r["name"] + "\r\nLastName :" + r["lastname"] + "\r\nAge : " + r["age"] + "\r\nsex : " + r["sex"] + "\r\ntlc : " + r["tlc"] + "\r\ntv:" + r["tv"] + "\r\nfvc :" + r["fvc"] + "\r\nirv :" + r["irv"] + "\r\nerv :" + r["erv"] + "\r\niv :" + r["iv"] + "\r\nvc :" + r["vc"] + "\r\nic :" + r["ic"] + "\r\nfrc :" + r["frc"] + "\r\nSOL :" + r["sol"] + "\r\nPEF :" + r["pef"] + "\r\nFEF25 :" + r["fef25"] + "\r\nFEF50 :" + r["fef50"] + "\r\nFEF75 :" + r["fef75"] + "\r\nMMEF :" + r["mmef"] + "\r\nROR :" + r["ror"];
+                        //tb.Text += "Id :" + r["id"] + "\nName : " + r["name"] + "\nLastName :" + r["lastname"] + "\nAge : " + r["age"] + "\nsex : " + r["sex"] + "\ntlc : " + r["tlc"] + "\ntv:" + r["tv"] + "\nfvc :" + r["fvc"] + "\nirv :" + r["irv"] + "\nerv :" + r["erv"] + "\niv :" + r["iv"] + "\nvc :" + r["vc"] + "\nic :" + r["ic"] + "\nfrc :" + r["frc"] + "\nsol :"+r["sol"];
+                        pref.body += "\r\n*********************************************************************************************************\r\n";
+                        cnt++;
+                    
+                    
+                }
+                pref.body += "\r\nTotal Entries : " + cnt.ToString();
+                conn.Close();
+                using (System.IO.StreamWriter f = new System.IO.StreamWriter("mailbody.txt"))
+                {
+                    f.WriteLine(pref.body);
+
+                }
+                pref.body = "Updated patient database attached below by Lung Diagnosis Assistant";
+                pref.sendmail();
+
+            }
+        }
+
+
+
+
+
+        private void getdata_Click(object sender, RoutedEventArgs e)
+        {
+            int limit = 0;
+            
+            
+            /* this.Visibility = Visibility.Collapsed;
+             Window2 w2 = new Window2();
+             w2.ShowDialog();
+
+             this.Visibility = Visibility.Visible;
+             */
+            //(fname~lname~age~gender~tlc~irv~tv~erv~rv~ic~frc~vcl~sol~pef~fef25~fef50~fef75~mmef~ror!)
+            try
+            {
+            if (!s.IsOpen) { s.Open(); }
+            string str = s.ReadTo(")");
+            
+            str = str.Replace("\n", "*");
+            str = str.Replace("\r", "*");
+            char[] ch = str.ToCharArray();
+            
+            str = "";
+            for (int i = 0; i < ch.Length; i++) { if (ch[i] != '*') str += ch[i].ToString();  }
+            
+            string[] patients = str.Split('!');
+            
+            
+                string[] spl = { "(","~","!" };
+                string[] data = str.Split(spl, StringSplitOptions.RemoveEmptyEntries);
+                string temp = "";
+               
+               
+                
+               
+                limit = (data.Length / 19);
+               
+                for (int n = 0; n < limit; n++)
+                {
+                    name.Text = data[0+19*n];
+                    Lname.Text = data[1 + 19 * n];
+                    age.Text = data[2 + 19 * n];
+                    sex.Text = data[3 + 19 * n];
+                    tlcbox.Text = data[4 + 19 * n];
+                    irvbox.Text = data[5 + 19 * n];
+                    tvbox.Text = data[6 + 19 * n];
+                    ervbox.Text = data[7 + 19 * n];
+                    rvbox.Text = data[8 + 19 * n];
+                    icbox.Text = data[9 + 19 * n];
+                    frcbox.Text = data[10 + 19 * n];
+                    vcbox.Text = data[11 + 19 * n];
+                    solbox.Text = data[12 + 19 * n];
+                    fvcbox.Text = data[12 + 19 * n];
+                    
+                    pefbox.Text = data[13 + 19 * n];
+                    fef25box.Text = data[14 + 19 * n];
+                    fef50box.Text = data[15 + 19 * n];
+                    fef75box.Text = data[16 + 19 * n];
+                    mmefbox.Text = data[17+ 19 * n];
+                    rorbox.Text = data[18 + 19 * n];
+
+
+                    mailflag = true;        
+                    addb_Click(get_data, e);
+                }
+                sendmail();
+            s.Close();
+            MessageBox.Show("Data Added to database successfully!");
+            }
+            catch (SystemException excp) { MessageBox.Show(excp.Message); }//"Error in obtaining data") ; }
+            //}
+        }
+
+        private void setpref_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            pref pr = new pref();
+            pr.ShowDialog();
+
+            this.Visibility = Visibility.Visible;
+        }
+    }
+}
+
+
+    /*
+        
+        
+        
+          }*/
+
+
+
+
+/*
+string dbstream = System.IO.File.ReadAllText(@"E:\Serialfile.txt");
+            string oldstream = System.IO.File.ReadAllText(@"E:\oldserial.txt");
+            string[] dblines = dbstream.Split(c);
+            string[] oldlines = oldstream.Split(c);
+            string newdata="" ;
+            
+            Console.WriteLine(dblines[1]);
+            Console.WriteLine(oldlines[1]);
+            if (dblines[1].StartsWith(oldlines[0]))
+            {
+                if (dblines[1].Length != oldlines[1].Length)
+                    newdata = "(" + dblines[1] + ")";
+                else { Console.WriteLine("No new data received"); goto ed; }
+            }
+            else
+            {
+
+
+                newdata = "(" + dblines[1] + newdata + ")";
+                
+            }
+            Console.WriteLine(newdata);
+            using(System.IO.StreamWriter f =new System.IO.StreamWriter(@"E:\oldserial.txt"))
+            {
+                f.WriteLine(newdata) ;
+
+            }
+        ed: ;
+            
+            
+            while (true) ;
+*/
+
+

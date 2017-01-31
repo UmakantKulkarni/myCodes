@@ -1,0 +1,317 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using MahApps.Metro;
+using MahApps.Metro.Controls;
+using System.Data.SQLite;
+using System.IO;
+using Microsoft.Office.Core;
+using Excel = Microsoft.Office.Interop.Excel;
+namespace metrowin
+{
+    /// <summary>
+    /// Interaction logic for Window1.xaml
+    /// </summary>
+    public partial class Window1 : MetroWindow
+    {
+        public Window1()
+        {
+            InitializeComponent();
+            export.IsEnabled = false;
+        }
+        public static string gpath = "";
+        public static string[] dbtemp;
+        private void viewer_Click(object sender, RoutedEventArgs e)
+        {
+
+            dbtemp = new string[21];
+            int cnt = 0;
+            bool flag = false;
+            string id;
+            if (vid.Text == "")
+            {
+                MessageBox.Show("The Name has not been input");
+            }
+            else
+            {
+                id = vid.Text;
+                vid.Text = "";
+                if (!File.Exists("spdbfinal.sqlite"))
+                {
+                    MessageBox.Show("No database created");
+                }
+                else
+                {
+                    SQLiteConnection conn = new SQLiteConnection("Data source=spdbfinal.sqlite;Version=3;");
+                    conn.Open();
+                    string sql = "select * from patient";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    SQLiteDataReader r = cmd.ExecuteReader();
+                    id = id.ToLower();
+                    tb.Text = "";
+                    while (r.Read())
+                    {
+
+
+                        if (id.Equals(r["name"].ToString().ToLower()))
+                        {
+                            tb.Text += "Id :" + r["id"] + "\nName : " + r["name"] + "\nLastName :" + r["lastname"] + "\nAge : " + r["age"] + "\nsex : " + r["sex"] + "\ntlc : " + r["tlc"] + "\ntv:" + r["tv"] + "\nfvc :" + r["fvc"] + "\nirv :" + r["irv"] + "\nerv :" + r["erv"] + "\niv :" + r["iv"] + "\nvc :" + r["vc"] + "\nic :" + r["ic"] + "\nfrc :" + r["frc"] + "\nSOL :"+r["sol"]+"\nPEF :"+r["pef"]+"\nFEF25 :"+r["fef25"]+"\nFEF50 :"+r["fef50"]+"\nFEF75 :"+r["fef75"]+"\nMMEF :"+r["mmef"]+"\nROR :"+r["ror"] ;
+                            tb.Text += "\n\n";
+                            dbtemp[0] = r["id"].ToString();
+                            dbtemp[1] = r["name"].ToString() ;
+
+                            dbtemp[2] = r["lastname"].ToString() ;
+                            dbtemp[3] = r["age"].ToString() ;
+                            dbtemp[4] = r["sex"].ToString() ;
+                            dbtemp[5] = r["tlc"].ToString() ;
+                            dbtemp[6] = r["tv"].ToString() ;
+
+
+                            dbtemp[7] = r["fvc"].ToString() ;
+                            dbtemp[8] = r["irv"].ToString() ;
+                            dbtemp[9] = r["erv"].ToString() ;
+                            dbtemp[10] = r["iv"].ToString() ;
+                            dbtemp[11] = r["vc"].ToString() ;
+                            dbtemp[12] = r["ic"].ToString() ;
+                            dbtemp[13] = r["frc"].ToString() ;
+                            dbtemp[14] = r["sol"].ToString();
+                            dbtemp[15] = r["pef"].ToString();
+                            dbtemp[16] = r["fef25"].ToString();
+                            dbtemp[17] = r["fef50"].ToString();
+                            dbtemp[18] = r["fef75"].ToString();
+                            dbtemp[19] = r["mmef"].ToString();
+                            dbtemp[20] = r["ror"].ToString();
+                            export.IsEnabled = true;
+                            cnt++;
+                            flag = true;
+                        }
+                        else
+                        {
+                            cnt++;
+                        }
+
+                    }
+                    if (flag == false)
+                    {
+                        tb.Text = "";
+                        tb.Text = "No Such Entry";
+                    }
+                    tb.Text += "\nTotal Entries : " + cnt.ToString();
+                    conn.Close();
+                }
+            }
+        }
+
+        private void rtn_Click(object sender, RoutedEventArgs e)
+        {
+
+
+            this.Close();
+        }
+
+        private void vall_Click(object sender, RoutedEventArgs e)
+        {
+
+            tb.Text = "";
+            int cnt = 0;
+            if (!File.Exists("spdbfinal.sqlite"))
+            {
+                MessageBox.Show("No database created");
+            }
+            else
+            {
+                SQLiteConnection conn = new SQLiteConnection("Data source=spdbfinal.sqlite;Version=3;");
+                conn.Open();
+                string sql = "select * from patient";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                SQLiteDataReader r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+
+                    tb.Text += "Id :" + r["id"] + "\nName : " + r["name"] + "\nLastName :" + r["lastname"] + "\nAge : " + r["age"] + "\nsex : " + r["sex"] + "\ntlc : " + r["tlc"] + "\ntv:" + r["tv"] + "\nfvc :" + r["fvc"] + "\nirv :" + r["irv"] + "\nerv :" + r["erv"] + "\niv :" + r["iv"] + "\nvc :" + r["vc"] + "\nic :" + r["ic"] + "\nfrc :" + r["frc"] + "\nSOL :" + r["sol"] + "\nPEF :" + r["pef"] + "\nFEF25 :" + r["fef25"] + "\nFEF50 :" + r["fef50"] + "\nFEF75 :" + r["fef75"] + "\nMMEF :" + r["mmef"] + "\nROR :" + r["ror"];
+                    //tb.Text += "Id :" + r["id"] + "\nName : " + r["name"] + "\nLastName :" + r["lastname"] + "\nAge : " + r["age"] + "\nsex : " + r["sex"] + "\ntlc : " + r["tlc"] + "\ntv:" + r["tv"] + "\nfvc :" + r["fvc"] + "\nirv :" + r["irv"] + "\nerv :" + r["erv"] + "\niv :" + r["iv"] + "\nvc :" + r["vc"] + "\nic :" + r["ic"] + "\nfrc :" + r["frc"] + "\nsol :"+r["sol"];
+                    tb.Text += "\n\n";
+                    cnt++;
+                }
+                tb.Text += "\nTotal Entries : " + cnt.ToString();
+                conn.Close();
+            }
+        }
+
+        private void deleteall_Click(object sender, RoutedEventArgs e)
+        {
+            if (!File.Exists("spdbfinal.sqlite"))
+            {
+                MessageBox.Show("No database created");
+            }
+            else
+            {
+                SQLiteConnection conn = new SQLiteConnection("Data source=spdbfinal.sqlite;Version=3;");
+                conn.Open();
+                string sql = "delete from patient";
+                SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Database deleted");
+            }
+
+        }
+
+        private void delete_Click(object sender, RoutedEventArgs e)
+        {
+            int cnt = 0;
+            bool flag = false;
+            string id;
+            if (did.Text == "")
+            {
+                MessageBox.Show("The Id has not been input");
+            }
+            else
+            {
+                id = did.Text;
+                did.Text = "";
+                if (!File.Exists("spdbfinal.sqlite"))
+                {
+                    MessageBox.Show("No database created");
+                }
+                else
+                {
+                    SQLiteConnection conn = new SQLiteConnection("Data source=spdbfinal.sqlite;Version=3;");
+                    conn.Open();
+                    string sql = "select * from patient";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    SQLiteDataReader r = cmd.ExecuteReader();
+                    //id=id.ToLower();
+                    tb.Text = "";
+                    while (r.Read())
+                    {
+
+
+                        if (id.Equals(r["id"].ToString()))
+                        {
+                            tb.Text = "Entry deleted : ";
+                            tb.Text += "Id :" + r["id"] + "\nName : " + r["name"] + "\nLastName :" + r["lastname"] + "\nAge : " + r["age"] + "\nsex : " + r["sex"] + "\ntlc : " + r["tlc"] + "\ntv:" + r["tv"] + "\nfvc :" + r["fvc"] + "\nirv :" + r["irv"] + "\nerv :" + r["erv"] + "\niv :" + r["iv"] + "\nvc :" + r["vc"] + "\nic :" + r["ic"] + "\nfrc :" + r["frc"] + "\nSOL :" + r["sol"] + "\nPEF :" + r["pef"] + "\nFEF25 :" + r["fef25"] + "\nFEF50 :" + r["fef50"] + "\nFEF75 :" + r["fef75"] + "\nMMEF :" + r["mmef"] + "\nROR :" + r["ror"];
+                            //tb.Text += "Id :" + r["id"] + "\nName : " + r["name"] + "\nLastName :" + r["lastname"] + "\nAge : " + r["age"] + "\nsex : " + r["sex"] + "\ntlc : " + r["tlc"] + "\ntv:" + r["tv"] + "\nfvc :" + r["fvc"] + "\nirv :" + r["irv"] + "\nerv :" + r["erv"] + "\niv :" + r["iv"] + "\nvc :" + r["vc"] + "\nic :" + r["ic"] + "\nfrc :" + r["frc"]; ;
+                            tb.Text += "\n\n";
+
+                            
+                            flag = true;
+                        }
+                        else
+                        {
+                            cnt++;
+                        }
+
+                    }
+                    if (flag == false)
+                    {
+                        tb.Text = "";
+                        tb.Text = "No Such Entry";
+                    }
+
+                    SQLiteConnection c = new SQLiteConnection("Data source=spdbfinal.sqlite;Version=3;");
+                    
+                    string sql2 = "delete from patient where id=@id_name";
+                    SQLiteCommand sqlcmd = new SQLiteCommand(sql2, conn);
+                    sqlcmd.Parameters.AddWithValue("@id_name", int.Parse(id));
+                    c.Open();
+                    sqlcmd.ExecuteNonQuery();
+                    c.Close();
+                    
+    
+
+                }
+            }
+        }
+
+        private void export_Click(object sender, RoutedEventArgs e)
+        {
+             Excel.Workbook mybook = null;
+             Excel.Application myapp = null;
+             Excel.Worksheet mysheet = null;
+            myapp = new Excel.Application();
+            myapp.Visible = false;
+            object misValue = System.Reflection.Missing.Value;
+           mybook= myapp.Workbooks.Add(misValue);
+            //mybook=myapp.Workbooks.Open("C:\\file.xlsx");
+            mysheet = (Excel.Worksheet)mybook.Worksheets.get_Item(1);
+            int lastrow = mysheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell).Row;
+            lastrow++;
+            mysheet.Cells[1, 1] = "Name";
+            mysheet.Cells[2, 1] = "Lastname";
+            mysheet.Cells[3, 1] = "Age";
+            mysheet.Cells[4, 1] = "Gender";
+            mysheet.Cells[5, 1] = "TLC";
+            mysheet.Cells[6,1] = "tv" ;  
+            mysheet.Cells[7,1] = "fvc" ; 
+            mysheet.Cells[8,1]="irv" ;
+            mysheet.Cells[9,1] = "erv" ;
+            mysheet.Cells[10,1] = "iv" ;
+            mysheet.Cells[11,1]="vc" ;
+            mysheet.Cells[12,1] = "ic";
+            mysheet.Cells[13, 1] = "frc";
+            mysheet.Cells[14,1]="sol" ;
+            mysheet.Cells[15, 1] = "pef";
+            mysheet.Cells[16, 1] = "fef25";
+            mysheet.Cells[17, 1] = "fef50";
+            mysheet.Cells[18, 1] = "fef75";
+            mysheet.Cells[19, 1] = "mmef";
+            mysheet.Cells[20, 1] = "ror";
+
+            for (int z = 1; z <= 20; z++ )
+                mysheet.Cells[z, 2] = dbtemp[z];
+            try
+            {
+                mybook.SaveAs("C:\\" + dbtemp[1] + dbtemp[2] + ".xls", Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                mybook.Close();
+                MessageBox.Show(dbtemp[1] + dbtemp[2] + ".xls created in C drive");
+            }
+            catch (SystemException exc) { MessageBox.Show("A file with the same name may already exist or\r\n An error in file creation occured"); }
+            
+
+        }
+
+        private void utcloud_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            { 
+            System.IO.StreamReader f = new StreamReader("gpath.txt");
+            gpath = f.ReadToEnd();
+            f.Close();
+            f.Dispose();
+            }
+            catch
+            {
+                MessageBox.Show("Google Drive Sync Application Path Error!\r\nPlease set path through preferences or check whether input path is valid!");
+            }
+
+
+
+
+
+
+
+
+            try
+            {
+                File.Copy("mailbody.txt", gpath+"lungdiagnosisdb.txt", true);
+                MessageBox.Show("Database Copied to specified path!");
+            }
+            catch
+            {
+                MessageBox.Show("Google Drive Sync Application Path Error!\r\nPlease set path through preferences or check whether input path exists!");
+            }
+
+            
+        }
+    }
+}

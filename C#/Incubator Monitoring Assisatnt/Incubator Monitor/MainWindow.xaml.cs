@@ -1,0 +1,627 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.IO.Ports;
+using System.Threading;
+using System.Windows.Threading;
+using System.Management;
+using System.Management.Instrumentation;
+
+namespace Incubator_Monitor
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        static Label[] tl = new Label[10];
+        static Label[] pl = new Label[10];
+        static Label[] hl = new Label[10];
+        static Label[] hgl = new Label[10];
+        static Label[] btl = new Label[10];
+        static Label[] incl = new Label[10];
+        static Label[] tstrl = new Label[10];
+        static Label[] pstrl = new Label[10];
+        static Label[] hstrl = new Label[10];
+        static Label[] hgstrl = new Label[10];
+        static Label[] btstrl = new Label[10];
+        
+        static bool[] tflag = new bool[10];
+        static bool[] pflag = new bool[10];
+        static bool[] hflag = new bool[10];
+        static bool[] hgflag = new bool[10];
+        static bool[] btflag = new bool[10];
+        static bool[] incflag = new bool[10];
+        static bool[] tstflag = new bool[10];
+        static bool[] pstflag = new bool[10];
+        static bool[] hstflag = new bool[10];
+        static bool[] hgstflag = new bool[10];
+        static bool[] btstflag = new bool[10];
+        static blinker[] b = new blinker[100];
+        static int bcount=0 ;
+        static int tll = 30, tul = 40, pll = 90, pul = 105, sul = 30, hll = 40, hul = 70;
+        string[] splitdata;
+        static SerialPort s = new SerialPort("COM50", 9600, Parity.None, 8, StopBits.One);
+        
+
+        public void stopallblinkers()
+        {
+            foreach (blinker bl in b)
+            {
+                if (bl != null)
+                {
+                    if (bl.isalive == true)
+                        bl.stopblinking();
+                
+                }
+            
+            }
+            bcount = 0;
+        
+        }
+
+
+        
+        public MainWindow()
+        {
+            
+            
+            InitializeComponent();
+            
+           
+            create_labels_temp();
+            create_labels_pressure();
+            create_labels_humidity();
+            create_labels_hazardousgases();
+            create_labels_btemperature();
+            create_labels_inc();
+            create_labels_tempstr();
+            create_labels_presstr();
+            create_labels_humstr();
+            create_labels_hazgasstr();
+            create_labels_btempstr();
+            String portnumber = autodetectport();
+            if (portnumber != null) { s = new SerialPort(portnumber, 9600, Parity.None, 8, StopBits.One); }
+            else { MessageBox.Show("No compatible devices found!\r\nPlease connect a compatible device and restart application!"); }
+            s.DataReceived += serial_interrupt;
+            try { s.Open(); }
+            catch (SystemException e) {  }
+            
+         }
+
+
+        private static string autodetectport()
+        {
+            ManagementScope connectionScope = new ManagementScope();
+            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
+
+            try
+            {
+                foreach (ManagementObject item in searcher.Get())
+                {
+                    string desc = item["Description"].ToString();
+                    string deviceId = item["DeviceID"].ToString();
+
+                    if (desc.Contains("Stellaris Virtual Serial Port"))
+                    {
+                        return deviceId;
+                    }
+                }
+            }
+            catch (ManagementException e)
+            {
+
+            }
+
+            return null ;
+        }
+
+
+
+        public void serial_interrupt(object sender, SerialDataReceivedEventArgs e)
+        {
+            string data = s.ReadTo(")");
+            
+            stopallblinkers();
+            process_data(data);
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                limitchecker();
+                logdata();
+            }));
+        }
+            
+            public void logdata()
+            {
+            String body = "*******************************************************************************************\r\n";
+            body += "Timestamp: " + DateTime.Now.ToString()+"\r\n";
+            using(System.IO.StreamWriter f = new System.IO.StreamWriter("log.txt",true))
+            {
+            for(int i=0 ; i<10 ; i++)
+            {
+            body+=incl[i].Content.ToString() +"\r\n" ;
+            body+=tstrl[i].Content.ToString()+": "+tl[i].Content.ToString()+"\r\n" ;
+            body+=pstrl[i].Content.ToString()+": "+pl[i].Content.ToString()+"\r\n" ;
+            body+=hstrl[i].Content.ToString()+": "+hl[i].Content.ToString()+"\r\n" ;
+            body+=hgstrl[i].Content.ToString()+": "+hgl[i].Content.ToString()+"\r\n" ;
+            body+=btstrl[i].Content.ToString()+": "+btl[i].Content.ToString()+"\r\n" ;
+            body+="------------------------------------------------------------------\r\n" ;
+            }
+            body+="*******************************************************************************************" ;
+            f.WriteLine(body) ;
+            f.Close() ;
+            }
+            
+            
+            
+            
+            
+            
+            
+        }
+
+        public void limitchecker()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                if (tflag[i] == true)
+                {
+                    b[bcount] = new blinker(500, tl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                    b[bcount] = new blinker(500, tstrl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                }
+
+
+                if (pflag[i] == true)
+                {
+                    b[bcount] = new blinker(500, pl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                    b[bcount] = new blinker(500, pstrl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                }
+
+                if (hflag[i] == true)
+                {
+                    b[bcount] = new blinker(500, hl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                    b[bcount] = new blinker(500, hstrl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                }
+                if (hgflag[i] == true)
+                {
+                    b[bcount] = new blinker(500, hgl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                    b[bcount] = new blinker(500, hgstrl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                }
+                if (btflag[i] == true)
+                {
+                    b[bcount] = new blinker(500, btl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                    b[bcount] = new blinker(500, btstrl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                }
+
+                if (incflag[i] == true)
+                {
+                    b[bcount] = new blinker(500, incl[i]);
+                    b[bcount].startblinking();
+                    bcount++;
+                }
+
+            }
+                    
+             
+        }
+
+        public void create_labels_tempstr()
+        {
+            tstrl[0] = i1t;
+            tstrl[1] = i2t;
+            tstrl[2] = i3t;
+            tstrl[3] = i4t;
+            tstrl[4] = i5t;
+            tstrl[5] = i6t;
+            tstrl[6] = i7t;
+            tstrl[7] = i8t;
+            tstrl[8] = i9t;
+            tstrl[9] = i10t;
+
+    
+    
+        }
+
+        public void create_labels_presstr()
+        {
+
+
+            pstrl[0] = i1p;
+            pstrl[1] = i2p;
+            pstrl[2] = i3p;
+            pstrl[3] = i4p;
+            pstrl[4] = i5p;
+            pstrl[5] = i6p;
+            pstrl[6] = i7p;
+            pstrl[7] = i8p;
+            pstrl[8] = i9p;
+            pstrl[9] = i10p;
+        
+        }
+
+        public void create_labels_humstr()
+        {
+            hstrl[0] = i1h;
+            hstrl[1] = i2h;
+            hstrl[2] = i3h;
+            hstrl[3] = i4h;
+            hstrl[4] = i5h;
+            hstrl[5] = i6h;
+            hstrl[6] = i7h;
+            hstrl[7] = i8h;
+            hstrl[8] = i9h;
+            hstrl[9] = i10h;
+        
+        
+        
+        }
+
+        public void create_labels_hazgasstr()
+        {
+            hgstrl[0] = i1hg;
+            hgstrl[1] = i2hg;
+            hgstrl[2] = i3hg;
+            hgstrl[3] = i4hg;
+            hgstrl[4] = i5hg;
+            hgstrl[5] = i6hg;
+            hgstrl[6] = i7hg;
+            hgstrl[7] = i8hg;
+            hgstrl[8] = i9hg;
+            hgstrl[9] = i10hg;
+        
+        
+        
+        }
+
+        public void create_labels_btempstr()
+        {
+            btstrl[0] = i1bt;
+            btstrl[1] = i2bt;
+            btstrl[2] = i3bt;
+            btstrl[3] = i4bt;
+            btstrl[4] = i5bt;
+            btstrl[5] = i6bt;
+            btstrl[6] = i7bt;
+            btstrl[7] = i8bt;
+            btstrl[8] = i9bt;
+            btstrl[9] = i10bt;   
+        
+        
+        }
+
+
+
+        public void create_labels_inc()
+        {
+            incl[0] = inc1;
+            incl[1] = inc2;
+            incl[2] = inc3;
+            incl[3] = inc4;
+            incl[4] = inc5;
+            incl[5] = inc6;
+            incl[6] = inc7;
+            incl[7] = inc8;
+            incl[8] = inc9;
+            incl[9] = inc10;
+
+        
+        
+        
+        }
+        public void create_labels_temp()
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120+(205*(i-1)), 68, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                tl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+            for (int i = 6; i <= 10; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 6)),428, 0, 0);
+                tl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+        }
+
+        public void create_labels_pressure()
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                dl.Margin = new Thickness(120 + (205 * (i - 1)), 118, 0, 0);
+                pl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+            for (int i = 6; i <= 10; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                dl.Margin = new Thickness(120 + (205 * (i - 6)), 478, 0, 0);
+                pl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+        }
+
+        public void create_labels_humidity()
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 1)), 168, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                hl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+            for (int i = 6; i <= 10; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 6)), 528, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                hl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+        }
+
+        public void create_labels_hazardousgases()
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 1)), 218, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                hgl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+            for (int i = 6; i <= 10; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 6)), 578, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                hgl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+        }
+
+        public void create_labels_btemperature()
+        {
+            for (int i = 1; i <= 5; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 1)), 268, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                btl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+            for (int i = 6; i <= 10; i++)
+            {
+                Label dl = new Label();
+                dl.Name = "i" + i.ToString() + "t";
+                dl.Content = "0";
+                dl.Margin = new Thickness(120 + (205 * (i - 6)), 628, 0, 0);
+                dl.VerticalAlignment = VerticalAlignment.Top;
+                dl.HorizontalAlignment = HorizontalAlignment.Left;
+                btl[i - 1] = dl;
+                this.grid_main.Children.Add(dl);
+            }
+        }
+
+        public void process_data(string data)
+        {
+            string[] sep = { "~", "(",")" };
+            splitdata = data.Split(sep, StringSplitOptions.RemoveEmptyEntries);
+            int pint=0 ;
+           this.Dispatcher.Invoke((Action)(() =>
+        {
+            int index;
+            for (int i = 1; i < 60; i += 6)
+            {
+                index = i / 6;
+                
+                tl[index].Content = splitdata[i];
+                if (int.Parse(splitdata[i]) < tll || int.Parse(splitdata[i]) > tul)
+                {
+                    tflag[index] = true;
+                    incflag[index] = true;
+                }
+                if (int.Parse(splitdata[i]) == -1)
+                {
+                    tflag[index] = false;
+                    incflag[index] = false;
+                }
+            }
+            }));
+           this.Dispatcher.Invoke((Action)(() =>
+           {
+               int index;
+               for (int i = 2; i < 60; i += 6)
+               {
+                   index = i / 6;
+                   pl[index].Content = splitdata[i];
+                   if (int.Parse(splitdata[i]) < pll || int.Parse(splitdata[i]) > pul)
+                       pflag[index] = true;
+                        incflag[index] = true;
+                        if (int.Parse(splitdata[i]) == -1)
+                        {
+                            pflag[index] = false;
+                            incflag[index] = false;
+                        }
+               }
+           }));
+           this.Dispatcher.Invoke((Action)(() =>
+           {
+               int index;
+               for (int i = 3; i < 60; i += 6)
+               {
+                   index = i / 6;
+                   hl[index].Content = splitdata[i];
+                   if (int.Parse(splitdata[i]) < hll || int.Parse(splitdata[i]) > hul)
+                       hflag[index] = true;
+                   incflag[index] = true;
+                   if (int.Parse(splitdata[i]) == -1)
+                   {
+                       hflag[index] = false;
+                       incflag[index] = false;
+                   }
+               }
+           }));
+           this.Dispatcher.Invoke((Action)(() =>
+           {
+               int index;
+               for (int i = 4; i < 60; i += 6)
+               {
+                   index = i / 6;
+                   hgl[index].Content = splitdata[i];
+                   if (int.Parse(splitdata[i]) > sul)
+                       hgflag[index] = true;
+                   incflag[index] = true;
+                   if (int.Parse(splitdata[i]) == -1)
+                   {
+                       hgflag[index] = false;
+                       incflag[index] = false;
+                   }
+               }
+           }));
+           this.Dispatcher.Invoke((Action)(() =>
+           {
+               int index;
+               for (int i = 5; i < 60; i += 6)
+               {
+                   index = i / 6;
+                   btl[index].Content = splitdata[i];
+                   if (int.Parse(splitdata[i]) < tll || int.Parse(splitdata[i]) > tul )
+                       btflag[index] = true;
+                   incflag[index] = true;
+                   if (int.Parse(splitdata[i]) == -1)
+                   {
+                       btflag[index] = false;
+                       incflag[index] = false;
+                   }
+               }
+           }));
+
+
+        }
+    
+
+    }
+
+    class blinker
+    {
+        int interval;
+        Label l;
+        DispatcherTimer timer = new DispatcherTimer();
+        public bool isalive;
+       public blinker(int t, Label v)
+        {
+
+            interval = t;
+            l = v;
+            isalive = false;
+        }
+        // Create a timer.
+        private void create_timer()
+        {
+            
+            timer.Tick += timer_Tick;
+            timer.Interval = new TimeSpan(0, 0, 0, 0, interval);
+            timer.Start();
+        }
+
+        // The timer's Tick event.
+        private bool BlinkOn = false;
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            if (BlinkOn)
+            {
+                l.Foreground = Brushes.White;
+                l.Background = Brushes.Red;
+            }
+            else
+            {
+                l.Foreground = Brushes.Red;
+                l.Background = Brushes.White;
+            }
+            BlinkOn = !BlinkOn;
+        }
+
+       public void startblinking()
+        {
+            isalive = true;
+            create_timer();
+
+            
+        }
+
+        public void stopblinking()
+       {
+           isalive = false;
+            timer.Stop();
+        }
+    
+    }
+}

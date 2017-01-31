@@ -1,0 +1,16 @@
+﻿<Controls:MetroWindow x:Class="metrowin.pref"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LDA Preferences" Height="600" Width="400" Background="Black" ResizeMode="NoResize">
+    <Grid>
+        <TextBox Name="mailtext" Controls:TextboxHelper.ClearTextButton="True" HorizontalAlignment="Left" Height="22" Margin="22,85,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="337"/>
+        <Label Content="Doctor's Mail Id:" HorizontalAlignment="Left" Margin="22,44,0,0" VerticalAlignment="Top" Width="126"/>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="22,135,0,0" VerticalAlignment="Top" Width="126" Style="{StaticResource AccentedSquareButtonStyle}" Click="Button_Click_1"/>
+        <Label Name="gplabel" Content="Google Drive Sync Application Path" HorizontalAlignment="Left" Margin="22,264,0,0" VerticalAlignment="Top" Width="233"/>
+        <TextBox x:Name="gpathinp" Controls:TextboxHelper.ClearTextButton="True" HorizontalAlignment="Left" Height="22" Margin="22,304,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="337"/>
+        <Button Name="gapply" Content="Apply" HorizontalAlignment="Left" Margin="22,353,0,0" VerticalAlignment="Top" Width="126" Style="{StaticResource AccentedSquareButtonStyle}" Click="gapply_Click"/>
+        <Button Name="gdone" Content="Done" HorizontalAlignment="Left" Margin="134,497,0,0" VerticalAlignment="Top" Width="121" Style="{StaticResource AccentedSquareButtonStyle}" Click="gdone_Click"/>
+    </Grid>
+</Controls:MetroWindow>
+ 
