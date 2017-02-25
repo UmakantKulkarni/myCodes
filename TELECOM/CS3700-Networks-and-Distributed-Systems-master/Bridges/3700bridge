@@ -1,0 +1,224 @@
+#!/usr/bin/python -u    
+# The -u makes output unbuffered, so it will show up immediately
+
+# Eric Ropiak
+# Yang Yang
+# CS3700
+# Project 2: Bridge
+
+# imports
+import sys
+import socket
+import select
+import json
+import time
+
+class Bridge:
+  def __init__(self):
+    self.id = sys.argv[1] #id of the bridge
+    self.rootId = sys.argv[1] #bridge id of the root of the spanning tree
+    self.hopsToRoot = 0 #how many hops away we are from the root
+    self.closedSockets = [] #array of sockets that are blocked by spanning tree algorithm
+    self.parent = None  #id of bridge leading to root
+    self.socketToParent = None #socket used to get to root
+    self.routingTable = {} 
+    self.bpduTable = {}
+    self.LAN = list(set(sys.argv[2:])) #Unique list of LANS to connect to 
+    self.sockets = [] 
+
+    self.start()
+
+  # starts the sockets and select
+  def start(self):
+    # creates sockets and connects to them
+    for x in range(len(self.LAN)):
+      s = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+      s.connect(self.pad(self.LAN[x]))
+      self.sockets.append(s)
+
+    print "Bridge " + self.id + " starting up\n"
+
+    self.sendBpdus()
+    lastBroadcast = self.getTimestamp()
+    lastBpduPrune = self.getTimestamp()
+    lastDataPrune = self.getTimestamp()
+
+    # Main loop
+    while True:
+      # Calls select with all the sockets; change the timeout value (1)
+      ready, ignore, ignore2 = select.select(self.sockets, [], [], 0.1)
+
+      # broadcast bpdu table every 500ms
+      if lastBroadcast + 500 < self.getTimestamp():
+        self.sendBpdus()
+        lastBroadcast = self.getTimestamp()
+
+      # prune bpdu table every 750ms
+      if lastBpduPrune + 750 < self.getTimestamp():
+        self.pruneBpduTable()
+        lastBpduPrune = self.getTimestamp()
+
+      # prune data table every 5000ms
+      if lastDataPrune + 5000 < self.getTimestamp():
+        self.pruneDataTable()
+        lastDataPrune = self.getTimestamp()
+
+      # Reads from each of the ready sockets
+      for x in ready:
+        dataString = x.recv(1500)
+        dataJson = json.loads(dataString)
+        
+        if dataJson['type'] == 'bpdu':
+          self.handleBpdu(dataJson, x)
+        elif x not in self.closedSockets and dataJson['type'] == 'data': # type: data
+          self.handleData(dataJson, x)
+
+  # pads the name with null bytes at the end
+  def pad(self, name):
+    result = '\0' + name
+    while len(result) < 108:
+      result += '\0'
+    return result
+
+  # creates and sends bpdu json message
+  def sendBpdu(self, socket, dest):
+    data = {}
+    message = {}
+    data['source'] = self.id
+    data['dest'] = dest
+    data['type'] = 'bpdu'
+
+    message['id'] = self.id
+    message['rootId'] = self.rootId
+    message['hopsToRoot'] = self.hopsToRoot
+    message['parent'] = self.parent
+    message['dontBlock'] = self.socketToParent == socket #if we are sending to our parent, tell them not to block us
+
+    data['message'] = message
+
+    jsonData = json.dumps(data)
+    socket.send(jsonData)
+
+  # sends a bpdu to each socket/port
+  def sendBpdus(self):
+    for socket in self.sockets:
+      self.sendBpdu(socket, 'ffff')
+
+  # removes all expired bpdu entries and sends a corresponding bpdu update
+  def pruneBpduTable(self):
+    for bridgeId in self.bpduTable.keys():
+      if bridgeId in self.bpduTable:
+        bridgeObj = self.bpduTable[bridgeId]
+
+        # check if bpdu entry has expired
+        if int(bridgeObj['timestamp']) + 750 < self.getTimestamp(): 
+          del self.bpduTable[bridgeId]
+          print('Bridge ' + bridgeId + ' has gone offline')
+
+          if (bridgeId == self.parent): #if the bridge that went offline was your parent, we need to find new path to root
+            self.updateRoot(self.id, 0, None, None) #reset all of our information
+            self.bpduTable = {}
+          else:
+            self.routingTable = {}
+
+          self.sendBpdus() #let other bridges know we detected change
+
+  # removes all expired data entries
+  def pruneDataTable(self):
+    for hostId in self.routingTable.keys():
+      if hostId in self.routingTable: #make sure entry hasnt been removed since when we got keys
+        hostObj = self.routingTable[hostId]
+
+        # check if bpdu entry has expired
+        if int(hostObj['timestamp']) + 5000 < self.getTimestamp(): 
+          del self.routingTable[hostId]
+          print('Host ' + hostId + 'from Bridge ' + self.id + ' has gone offline')
+
+  #prints out a list of all of the designated ports
+  def printDesignatedPorts(self):
+    designatedPorts = []
+    for socket in self.sockets:
+      if socket not in self.closedSockets and socket != self.socketToParent: #check if socket (port) is designated
+        designatedPorts.append(self.sockets.index(socket))
+    print('Designated Ports for ' + self.id + ' : ' + `designatedPorts`)
+
+  # updates bridge with a new root
+  def updateRoot(self, newRootId, newHopsToRoot, newParent, newSocketToParent):
+    self.rootId = newRootId
+    self.hopsToRoot = newHopsToRoot
+    self.parent = newParent
+    self.socketToParent = newSocketToParent
+
+    rootPort = None
+    if self.socketToParent in self.sockets:
+      rootPort = self.sockets.index(self.socketToParent)
+
+    print 'New root: ' + `self.id` + '/' + `rootPort`
+    self.printDesignatedPorts()
+
+    self.routingTable = {} 
+    self.closedSockets = []
+          
+  # handler for an incoming bpdu message
+  def handleBpdu(self, jsonData, socket):
+    message = jsonData['message']
+    # add bpdu to the table
+    self.bpduTable[message['id']] = {'timestamp': self.getTimestamp(), 'socket': socket}
+
+    if message['id'] == self.parent: # from parent
+      if message['rootId'] > self.rootId: # old root is gone (otherwise your parent's root id should match yours)
+        if self.id < message['rootId']: # we will become the new root (our id is lower than our parents)
+          self.updateRoot(self.id, 0, None, None)
+          self.sendBpdus()
+          return
+        elif self.id > message['rootId']: # parent becomes new root
+          self.updateRoot(message['rootId'], message['hopsToRoot'] + 1, message['id'], socket)
+          self.sendBpdus()
+          return
+    if message['rootId'] == self.rootId: #they have agreed on root node
+      if (not (message['dontBlock'] or socket == self.socketToParent)): #the nodes dont have a parent child relationship
+        if (self.id > message['id'] and socket not in self.closedSockets): #the bridge with higher id establishes the block
+          print 'Disabled port: ' + `self.id` + '/' + `self.sockets.index(socket)`
+          self.closedSockets.append(socket)
+          self.printDesignatedPorts()
+    else: #still need to agree on root node
+      if message['rootId'] < self.rootId: #switch to lower root
+        self.updateRoot(message['rootId'], message['hopsToRoot'] + 1, message['id'], socket)
+        self.sendBpdus()
+      elif message['rootId'] > self.rootId: #notify other bridge that lower route is available
+        dest = None
+        for key in self.bpduTable: #find destination for our reesponse message
+          if self.bpduTable[key]['socket'] == socket:
+            dest = key
+        self.sendBpdu(socket, dest)
+
+  # handler for an incoming data message
+  def handleData(self, jsonMessage, incomingSocket):
+    print 'Received message ' + `jsonMessage['message']['id']` + ' on port ' + `self.sockets.index(incomingSocket)` + ' from ' + json.dumps(jsonMessage['source']) + ' to ' + json.dumps(jsonMessage['dest'])
+    dataObj = {"timestamp": self.getTimestamp(), "socket": incomingSocket}
+
+    self.routingTable[jsonMessage['source']] = dataObj; #add info to routing table
+    self.tableDestination = self.routingTable.get(jsonMessage['dest']) 
+
+    socketFromTable = None
+    if self.tableDestination: #get port of destination (if we have it in table)
+      socketFromTable = self.tableDestination['socket']
+
+    if incomingSocket == socketFromTable: #if the destination is thru the port the message came in on, discard
+      print 'Not forwarding message ' + `jsonMessage['message']['id']`
+    elif socketFromTable and socketFromTable not in self.closedSockets: # we know where destination is - its not where we got message from
+      print 'Forwarding message ' + `jsonMessage['message']['id']` + ' to port ' + `self.sockets.index(socketFromTable)`
+      socketFromTable.send(json.dumps(jsonMessage));
+    elif (not self.tableDestination) or socketFromTable in self.closedSockets: # Destination is not in our routing table
+      print('Broadcasting message ' + `jsonMessage['message']['id']` + ' to all ports')
+      # dont want to send it back to where it came from or any closed sockets
+      self.socketsToSendTo = [socket for socket in self.sockets if (socket != incomingSocket and socket not in self.closedSockets)]
+      for socket in self.socketsToSendTo:
+        socket.send(json.dumps(jsonMessage));
+
+  # gives the current time in milliseconds since epoch
+  def getTimestamp(self):
+    return int(time.time() * 1000)
+
+# start the bridge
+bridge = Bridge()

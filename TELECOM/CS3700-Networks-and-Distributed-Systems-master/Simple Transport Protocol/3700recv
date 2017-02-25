@@ -1,0 +1,173 @@
+#!/usr/bin/python -u
+
+# Eric Ropiak & Yang Yang
+# CS3700
+# Project 3
+# Receiver Code
+
+import sys
+import socket
+import time
+import datetime
+import select
+import json
+import zlib
+import random
+
+MSG_SIZE = 1500 #MTU
+TIMEOUT = 30 #socket timeout
+BUFFERED_DATA = {} #buffer of data we have received
+BYTES_ADDED = 0 #how many bytes we have added to output
+LAST_ACKED = None #seq num of last packet we acked
+TOTAL_MSG_LENGTH = None #how many bytes we need in total, will be sent over from sender
+
+# Sample Data Message
+# {"a": ack, "c": zlib.crc32(str(ack)), "b": BYTES_ADDED, "l": LAST_ACKED}
+# a=ack, c=checksum, b=bytesAdded, l=lastAcked
+# we send bytesAdded and lastAcked to provide the sender with more information about what has been
+# received in case some acks are dropped. Reduces the amount of duplicate transmitions. For example,
+# by including the seq num of the last acked we make it so that two consecutive acks must be dropped
+# in order for the received packet to go unacked
+
+def log(string):
+  sys.stderr.write(datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + string + "\n")
+
+# Bind to localhost and an ephemeral port
+UDP_IP = "127.0.0.1"
+UDP_PORT = 0
+
+# Set up the socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+sock.bind((UDP_IP, UDP_PORT))
+sock.settimeout(TIMEOUT)
+
+# Get port we bound to
+UDP_PORT = sock.getsockname()[1]
+log("[bound] " + str(UDP_PORT))
+
+# handles incoming message from sender. If this is the next data sequentially, it is added to our output, then we add
+# any subsequent stored data that we have. If it arrives out fo order we save it and qill add it later
+def handle_data(jsonMessage):
+  global BUFFERED_DATA
+  global BYTES_ADDED
+
+  if (BUFFERED_DATA.get(jsonMessage['s'])): # We have already received this message
+    log("[recv data] " + str(jsonMessage['s']) + " (" + str(len(jsonMessage['d'])) + ") IGNORED")
+  else:
+    BUFFERED_DATA[jsonMessage['s']] = jsonMessage; #add message to buffer
+    if (jsonMessage['s'] == BYTES_ADDED): #this data is next in the sequence, add it to output
+      log("[recv data] " + str(jsonMessage['s']) + " (" + str(len(jsonMessage['d'])) + ") ACCEPTED (in-order)")
+      sys.stdout.write(jsonMessage['d'])
+      BYTES_ADDED += len(jsonMessage['d'])
+      add_queued_data()
+      if (BYTES_ADDED == TOTAL_MSG_LENGTH):
+        shut_down()
+    else: #data arrived out of order
+      log("[recv data] " + str(jsonMessage['s']) + " (" + str(len(jsonMessage['d'])) + ") ACCEPTED (out-of-order)")
+
+# loops through our buffered data dictionary, and as long as we have the next info that we need stored, it 
+# adds that info to the output and increases the counts of bytes we have acked
+def add_queued_data():
+  global BUFFERED_DATA
+  global BYTES_ADDED
+
+  while (BUFFERED_DATA.get(BYTES_ADDED)): #we already have the next message stored in our table
+    jsonMessage = BUFFERED_DATA.get(BYTES_ADDED)
+    log("[adding stored data] " + str(jsonMessage['s']) + " (" + str(len(jsonMessage['d'])) + ") ACCEPTED (from queue)")
+    sys.stdout.write(jsonMessage['d'])
+    BYTES_ADDED += len(jsonMessage['d'])
+
+
+#send our ack
+def send_ack(ack):
+  global LAST_ACKED
+
+  msg = json.dumps(add_checksum_to_message({"a": ack, "b": BYTES_ADDED, "l": LAST_ACKED}))
+  #corruptMessage = add_corruption(msg, 50) #corrupt 50 percent of messages for testing
+  #msg = corruptMessage
+  LAST_ACKED = ack
+  log("ABOUT TO SEND " + msg)
+  if sock.sendto(msg, addr) < len(msg):
+    log("[error] unable to fully send packet")
+
+#checks whether incoming dataString is corrupt
+def is_not_corrupt(dataString):
+  try:
+    dataJson = json.loads(dataString)
+    messageInfo = {}
+    checksum = None
+    for key in dataJson:
+      if (key == 'c'):
+        checksum = dataJson[key]
+      else:
+        messageInfo[key] = dataJson[key]
+    localChecksum = zlib.crc32(json.dumps(messageInfo))
+    return checksum and localChecksum and checksum == localChecksum
+  except (ValueError, KeyError, TypeError):
+    return False
+
+# takes in a json message, computes its checksum, adds the checksum to the object then returns it
+def add_checksum_to_message(jsonMessage):
+  stringMessage = json.dumps(jsonMessage)
+  checksum = zlib.crc32(stringMessage)
+  jsonMessage['c'] = checksum
+  return jsonMessage
+
+#used for testing only, corrupts a byte in corruptPercent of packets
+def add_corruption(stringMessage, corruptPercent):
+  if (random.random()* 100 <= corruptPercent):
+    listMessage = list(stringMessage)
+    listMessage[int(random.random() * len(listMessage))] = str(int(random.random() * 10))
+    return "".join(listMessage)
+  else:
+    return stringMessage
+
+# shuts down the receiver, but first blasts kill messages to the sender to reduce the chances of all kill
+# messages getting dropped
+def shut_down():
+  for i in range (0, 7):
+    msg = json.dumps(add_checksum_to_message({"k": True}))
+    log("ABOUT TO SEND " + msg)
+    if sock.sendto(msg, addr) < len(msg):
+      log("[error] unable to fully send packet")
+
+  log("[recv completed]")
+  sys.exit(0)
+
+
+log("[bound] " + str(UDP_PORT))
+
+# Now listen for packets
+while True:
+  result = sock.recvfrom(MSG_SIZE)
+
+  # If nothing is ready, we hit the timeout
+  if result:
+    (data, addr) = result
+
+    #check to see if packet is corrupt
+    if(is_not_corrupt(data)):
+
+      decoded = json.loads(data)
+
+      # If the EOF flag is set, exit
+      if ('e' in decoded):
+        send_ack(decoded['e'])
+        if decoded['e'] == BYTES_ADDED: #we have added all bytes 
+          shut_down()
+        else:
+          TOTAL_MSG_LENGTH = decoded['e'] #can shut down once we receiver TOTAL_MSG_LENGTH bytes
+
+      else:
+        if (decoded['d']):
+          handle_data(decoded)
+
+        send_ack(decoded['s'] ) # Send back an ack to the sender
+
+    else:
+      log("[recv corrupt packet]")
+      log(data)
+
+  else:
+    log("[error] timeout")
+    sys.exit(-1)

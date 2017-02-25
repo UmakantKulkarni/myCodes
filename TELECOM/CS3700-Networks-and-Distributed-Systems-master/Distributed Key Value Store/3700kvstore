@@ -1,0 +1,465 @@
+#!/usr/bin/env python
+
+import sys, socket, select, time, json, random, math
+
+# Your ID number
+my_id = sys.argv[1]
+
+# The ID numbers of all the other replicas
+replica_ids = sys.argv[2:]
+
+# gives the current time in milliseconds since epoch
+def getTimestamp():
+  return int(time.time() * 1000)
+
+# global vars
+QUORUM = math.floor(((len(replica_ids) + 1) / 2 ) + 1)
+
+ELECTION_TIMEOUT = 0 # If timeout expires, we must start an election
+ELECTION_DURATION = 500 # Milliseconds to wait before starting election
+LEADER_VOTES = [] # Array of all of the replicas that have voted for us this term
+CURRENT_TERM_VOTE = None #ID of replica that we have voted for this term
+STATE = 'Follower' #One of: Follower, Leader, Candidate
+RANDOM_ELECTION_WAIT_ENDING = None #If our election failed, use this to start a random timeout before starting another
+REPLICA_TIMEOUT_LENGTH = 1500 #After how long we should time out a replica if we havent heard from it
+NEXT_VOTE_FOR_ID = None #If our election fails, this is who we should vote for next time
+NEXT_VOTE_COMMIT_INDEX = None #This is how many entries the furthest replica along has commited
+IS_TIMED_OUT_FROM_LEADER = False #Set to true when we have times out from leader
+LAST_LEADER = None #Id of the last leader that has gone offline
+TERM_DURING_LAST_LEADER = 0 #Term we were in when we had that last leader
+
+
+# append rpc vars
+TERM = 0
+LOG = ['empty'] # stores all msgs from client, with an offset throwaway
+								# value so LOGs are 1-indexed
+DATA = {} # should be the same across all replicas
+COMMIT_INDEX = 0 # index in the log of the last message that we have commited
+LEADER_ID = None # ID of the replica that is the leader
+LAST_APPLIED = 0 # index of the most recent element added to the log
+
+# leader vars
+NEXT_INDEX = {} # ID to next log entry index
+MATCH_INDEX = {} # ID to known log entry index replicated
+QUORUM_COUNTER = {} # dict of messages to the votes they have
+REPLICA_TIMEOUT = {} #dict mapping replica ids to the timestamp when we last heard from them
+MESSAGE_QUEUE = {} #queue of messages that we received when we had no leader
+GOTTEN_QUEUED_MESSAGES_FROM = [] #Keep track of which replicas sent you their message queue they accululated during your election
+MESSAGE_QUEUE_CLEARED = False #Marked true when we have emptied the queue of messages built up suring our election
+LEADER_HEARTBEAT_RATE = 20 # How often a leader should send a heartbeat append message
+LAST_SENT_HEARTBEAT = 0 # When we last sent a heartbeat message 
+
+
+
+# Checks to see if it has been more than ELECTION_DURATION milliseconds since we last heard from the leader.
+# If so, includes logic to start the election process until we have a new leader
+def checkLastLeaderTimestamp():
+	global RANDOM_ELECTION_WAIT_ENDING 
+	global STATE
+	global CURRENT_TERM_VOTE
+	global LEADER_ID
+	global ELECTION_TIMEOUT
+	global IS_TIMED_OUT_FROM_LEADER
+	global LAST_LEADER
+	global TERM_DURING_LAST_LEADER
+
+	if (getTimestamp() - ELECTION_TIMEOUT > ELECTION_DURATION and STATE != 'Leader'): #either timed out from leader or election
+		if (not IS_TIMED_OUT_FROM_LEADER): #just timed out for first time
+			IS_TIMED_OUT_FROM_LEADER = True
+			LAST_LEADER = LEADER_ID
+			TERM_DURING_LAST_LEADER = TERM
+		#print "Our leader " + `LEADER_ID` + " has timed out " + `my_id`
+		LEADER_ID = None
+		if (STATE is 'Candidate'): #timed out from election
+			if (NEXT_VOTE_FOR_ID == my_id): #I am supposed to be next leader
+				if RANDOM_ELECTION_WAIT_ENDING == None: # start randomized timeout of 100 to 300 milliseconds
+					RANDOM_ELECTION_WAIT_ENDING = getTimestamp() + random.randrange(100, 300)
+				elif (getTimestamp() > RANDOM_ELECTION_WAIT_ENDING): # our random timeout is over, start our election
+					startElection()
+			else: #I am not going to be leader, wait to hear elect message
+				ELECTION_TIMEOUT = getTimestamp()
+				CURRENT_TERM_VOTE = None
+
+		elif (CURRENT_TERM_VOTE == None): #we timed out from leader, and havent yet voted for anyone, start election
+			STATE = 'Candidate'
+			startElection()
+
+# Starts the election by voting for ourself and sending elect me messages out to everyone
+def startElection():
+	global TERM
+	global ELECTION_TIMEOUT
+	global RANDOM_ELECTION_WAIT_ENDING 
+	global LEADER_VOTES
+	global CURRENT_TERM_VOTE
+	global NEXT_VOTE_FOR_ID
+	global NEXT_VOTE_COMMIT_INDEX
+
+	#print 'starting election at ' + `my_id`
+	ELECTION_TIMEOUT = getTimestamp()
+	TERM = TERM + 1
+	LEADER_VOTES= [my_id] #vote for yourself
+	CURRENT_TERM_VOTE = my_id
+	RANDOM_ELECTION_WAIT_ENDING = None
+
+	NEXT_VOTE_FOR_ID = my_id
+	NEXT_VOTE_COMMIT_INDEX = COMMIT_INDEX
+
+	for replica in replica_ids:
+		# broadcast vote for me message to everyone
+		sendElectionMessageTo(replica)
+
+# Sends an election message to dest
+def sendElectionMessageTo(dest):
+	# send three votes in case one gets dropped along the way
+	for i in range(0, 3):
+		sock.send(json.dumps({'src': my_id, 'dst': dest, 'leader': my_id,
+					                  'type': 'elect', 'data': {'lastCommmited' : COMMIT_INDEX, 'logLen': LAST_APPLIED}}) + '\n')
+
+# Handles election message at a replica. Also keeps track of which replica that sent an elect me message
+# has committed the most entries. If we haven't voted for anyone yet and we are timed out, cast our vote 
+# when we hear any message
+def handleElectionMsg(msg):
+	global CURRENT_TERM_VOTE
+	global NEXT_VOTE_FOR_ID
+	global NEXT_VOTE_COMMIT_INDEX
+
+	# Handles section 5.4.1 of paper by keeping track of who has the highest commited entry
+	if (msg['data']['lastCommmited'] == NEXT_VOTE_COMMIT_INDEX): #if two replicas have same highest commit, take the one with higher id
+		NEXT_VOTE_FOR_ID = max(NEXT_VOTE_FOR_ID, msg['src'])
+	elif (msg['data']['lastCommmited'] > NEXT_VOTE_COMMIT_INDEX):
+		NEXT_VOTE_FOR_ID = msg['src']
+		NEXT_VOTE_COMMIT_INDEX = msg['data']['lastCommmited']
+
+	# cast a vote for the sender if we can
+	if (CURRENT_TERM_VOTE == None or CURRENT_TERM_VOTE == msg['src']) and IS_TIMED_OUT_FROM_LEADER:
+		# only vote for them if they have higher commited index than you
+		if (msg['data']['lastCommmited'] >= COMMIT_INDEX):
+			CURRENT_TERM_VOTE = msg['src']
+			#print 'voting for ' + msg['src'] + ' from ' + `my_id`
+			voteFor(msg['src'])
+
+#sends the vote message to dest
+def voteFor(dest):
+	# send three votes in case one gets dropped along the way
+	for i in range(0,3):
+		sock.send(json.dumps({'src': my_id, 'dst': dest, 'leader': dest,
+						                  'type': 'vote'}) + '\n')
+
+# handles vote messages and checks if we have received enough votes to become leader. If so, it updates our state
+# and broadcasts messages to all replicas
+def handleVoteMsg(msg):
+	global LEADER_VOTES
+	global STATE
+	global NEXT_INDEX
+	global LEADER_ID
+	global TERM
+	global replica_ids
+	global LAST_LEADER
+
+	if (STATE == 'Candidate'):
+		if (msg['src'] not in LEADER_VOTES):	
+			LEADER_VOTES.append(msg['src'])
+
+		if (len(LEADER_VOTES) >= QUORUM):
+			# update state
+			STATE = 'Leader'
+			LEADER_ID = my_id
+			TERM = TERM + 1
+			#print '===========================we are the new leader! ' + my_id + '==============================='
+
+			# remove previous leader form list of rpelica ids b/c they are dead and there is no point sending them stuff
+			if LAST_LEADER in replica_ids:
+				replica_ids.remove(LAST_LEADER)
+			# reintialize the next index for all replicas
+			for replica in replica_ids:
+				NEXT_INDEX[replica] = COMMIT_INDEX + 1
+			# add timestamp that will allow us to detect for replica timeouts in the future
+			for replica in replica_ids:
+				REPLICA_TIMEOUT[replica] = {'lastHeardFrom' : getTimestamp()}
+
+			sendAppend()
+			
+
+# sends append message from leader to all replicas
+def sendAppend():	
+	global LAST_SENT_HEARTBEAT
+	global TERM
+
+	LAST_SENT_HEARTBEAT = getTimestamp()
+
+	for replica in replica_ids:
+		data = {'nextIndex': NEXT_INDEX[replica],
+				'entries': LOG[NEXT_INDEX[replica]:], #send them all messages that arent in their log
+				'commitIndex': COMMIT_INDEX,
+				'term': TERM,
+				'receivedMsgQueue' : replica in GOTTEN_QUEUED_MESSAGES_FROM}
+		sendMessageToReplica(replica, 'append', data)
+
+# handles append messge
+def handleAppendMsg(msg):
+	checkForWrongTImeout(msg)
+	updateStateAfterAppend(msg)
+	respondToAppendMessage(msg)
+
+# checks to see if we wrongly timed out for leader, if so, revert back into state we were in
+# before timing out
+def checkForWrongTImeout(msg):
+	global LAST_LEADER
+	global CURRENT_TERM_VOTE
+	global TERM
+
+	if(LEADER_ID == None and msg['src'] == LAST_LEADER): #we wrongly timed out, undo eveything from election
+		LAST_LEADER = None
+		CURRENT_TERM_VOTE = None
+		TERM = TERM_DURING_LAST_LEADER
+
+# updates state based on append message. Adds all new messages to the log and commits as many
+# messages as possible to catch up to leader
+def updateStateAfterAppend(msg):
+	global ELECTION_TIMEOUT
+	global STATE
+	global LEADER_ID
+	global IS_TIMED_OUT_FROM_LEADER
+	global TERM
+	global CURRENT_TERM_VOTE
+	global RANDOM_ELECTION_WAIT_ENDING
+	global MESSAGE_QUEUE
+
+	# update our state
+	ELECTION_TIMEOUT = getTimestamp()
+	STATE = 'Follower'
+	LEADER_ID = msg['src']
+	IS_TIMED_OUT_FROM_LEADER = False
+
+	# just heard from new leader
+	if(msg['data']['term'] > TERM):
+		TERM = msg['data']['term']
+		CURRENT_TERM_VOTE = None
+		RANDOM_ELECTION_WAIT_ENDING = None
+
+	# leader has gotten our message queue, it is safe to clear it now
+	if(msg['data']['receivedMsgQueue']):
+		MESSAGE_QUEUE = {}
+
+	leaderCommitIndex = msg['data']['commitIndex']
+
+	# commit as many mesages as we can to match leader
+	for i in range(COMMIT_INDEX + 1, min(leaderCommitIndex + 1, len(LOG))):
+		commitPut(i)
+
+# sends appropriate repsonse back to leader after updating our LAST_APPLIED
+def respondToAppendMessage(msg):
+	global LOG
+	global LAST_APPLIED
+
+	# empty append message means that its a heartbeat appendrpc
+	if (len(msg['data']['entries']) == 0):
+		data = {'status': 'ok', 'currLastApplied': LAST_APPLIED, 'msgQueue': MESSAGE_QUEUE}
+		sendMessageToReplica(msg['src'], 'appendResponse', data)
+
+	else:
+		# entries is greater than 0, meaning its a put appendrpc
+		nextIndex = msg['data']['nextIndex']
+
+		# append all entries to LOG, clobbering any existing entries if necessary
+		for message in msg['data']['entries']:
+			message['term'] = TERM
+			if (nextIndex >= len(LOG)):
+				LOG.append(message)
+				LAST_APPLIED = LAST_APPLIED + 1
+			else:
+				LOG[nextIndex] = message
+			nextIndex = nextIndex + 1
+
+		data = {'status': 'ok', 'currLastApplied': LAST_APPLIED, 'msgQueue': MESSAGE_QUEUE}
+		sendMessageToReplica(msg['src'], 'appendResponse', data)
+
+
+# in the leader, when we hear an append response, update our quorum counter for each message that the 
+# replica just applied. If the new application puts us past the quorum, commit the message. Then update
+# the NEXT_INDEX for that replica so we knwo which messages to send it next
+def handleAppendResponseMsg(msg):
+	global NEXT_INDEX
+	global QUORUM_COUNTER
+	global REPLICA_TIMEOUT
+	global COMMIT_INDEX
+	global MESSAGE_QUEUE
+	global GOTTEN_QUEUED_MESSAGES_FROM
+
+	REPLICA_TIMEOUT[msg['src']]['lastHeardFrom'] = getTimestamp()
+	followerLastApplied = min(msg['data']['currLastApplied'] + 1, len(LOG))
+	
+	# check to see if the replica has sent us 
+	if msg['src'] not in GOTTEN_QUEUED_MESSAGES_FROM:
+		GOTTEN_QUEUED_MESSAGES_FROM.append(msg['src'])
+		for timestamp in msg['data']['msgQueue']:
+			if int(timestamp) in MESSAGE_QUEUE:
+				MESSAGE_QUEUE[int(timestamp)].append(msg['data']['msgQueue'][timestamp])
+			else:
+				MESSAGE_QUEUE[int(timestamp)] = msg['data']['msgQueue'][timestamp]
+
+	# for loop is upper bound exclusive
+	for i in range(NEXT_INDEX[msg['src']], followerLastApplied):
+		if (i > COMMIT_INDEX): #only would have it if we had commited message, leader died, we became leader, and then another replica put it in their logs, in which case it has already beem commited and can be ignored
+			# only count for log messages from this term (paper section 5.4.2)
+			if (LOG[i]['term'] == TERM):
+				QUORUM_COUNTER[i] = QUORUM_COUNTER[i] + 1
+
+				if QUORUM_COUNTER[i] == QUORUM:
+					for j in range(COMMIT_INDEX + 1, i + 1):
+						commitPut(j)
+		
+	NEXT_INDEX[msg['src']] = followerLastApplied
+
+# commits the put of the given message id. If we are the leader, send a response to the client saying we have 
+# successfully committed the put
+def commitPut(msgId):
+	global DATA
+	global COMMIT_INDEX
+
+	#print 'committing message: ' + `msgId` + ' at ' + `my_id`
+
+	messageFromClient = LOG[msgId]
+	DATA[messageFromClient['key']] = messageFromClient['value'] # data is committed
+	COMMIT_INDEX = COMMIT_INDEX + 1
+
+	if STATE is 'Leader':
+		# tell the client that the put has successfully been stored and replicated
+		sock.send(json.dumps({'src': my_id, 
+								'dst': messageFromClient['src'], 
+								'leader': my_id,
+				                'type': 'ok', 
+				                'MID': messageFromClient['MID']
+				                  }) + '\n')
+
+	
+# assumes that the leader has received the get and returns the appropriate value to the key
+def handleClientGet(msg):
+	entry = DATA[msg['key']] if msg['key'] in DATA else ''
+	sock.send(json.dumps({'src': my_id, 'dst': msg['src'],'leader': my_id, 'type': 'ok', 'MID': msg['MID'], 'value': entry}) + '\n')
+
+# assumes that the leader has received the put, adds it to the log and the forwards it to all replicas
+# via a new append message
+def handleClientPut(msg):
+	global LOG
+	global LAST_APPLIED
+	global QUORUM_COUNTER
+
+	msg['term'] =  TERM
+	LOG.append(msg)
+	LAST_APPLIED = LAST_APPLIED + 1
+	QUORUM_COUNTER[LAST_APPLIED] = 1 # put msg in quorum counter, give one vote for ourselves
+	
+	# send append to all other replicas and wait for quorum
+	sendAppend()
+
+# redirects client back to proper leader
+def sendRedirectMsg(msg):
+	global LEADER_ID
+
+	sock.send(json.dumps({'src': my_id, 'dst': msg['src'], 'leader': LEADER_ID, 'type': 'redirect', 'MID': msg['MID']}) + '\n')
+
+# checks to see if any replica has timed out, if so remove it from our list so we don't send it 
+# unnecessary messages
+def checkReplicaTimeouts():
+	global replica_ids
+	global REPLICA_TIMEOUT
+
+	for replica in replica_ids:
+		if REPLICA_TIMEOUT[replica]['lastHeardFrom'] + REPLICA_TIMEOUT_LENGTH < getTimestamp():
+			#print `replica` + ' has gone offline ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+			replica_ids.remove(replica)
+
+
+# sends message with specified type and data to destination
+def sendMessageToReplica(dest, msgType, data):
+	sock.send(json.dumps({'src': my_id, 'dst': dest, 'leader': LEADER_ID,'type': msgType, 'data': data}) + '\n')
+
+# handles all messages that were in our message queue
+def emptyMessageQueue():
+	global MESSAGE_QUEUE
+	global MESSAGE_QUEUE_CLEARED
+
+	for timestamp in sorted(MESSAGE_QUEUE):
+		for msg in MESSAGE_QUEUE[timestamp]:
+			# handle a client get request
+			if msg['type'] == 'get':
+				handleClientGet(msg)
+			# handle a client put request
+			if msg['type'] == 'put':
+				handleClientPut(msg)
+
+	MESSAGE_QUEUE = {}
+	MESSAGE_QUEUE_CLEARED = True
+
+
+# Connect to the network. All messages to/from other replicas and clients will
+# occur over this socket
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+sock.connect(my_id)
+
+last = 0
+
+while True:
+	# Blocks every 0.1 sec
+	ready = select.select([sock], [], [], 0.1)[0]
+
+	# Check to see if we have timed out from the leader
+	checkLastLeaderTimestamp()
+
+	if STATE is 'Leader':
+		checkReplicaTimeouts()
+
+	if sock in ready:
+		raw = sock.recv(32768)
+		
+		# we may receive multiple messages during a single recv(); \n denotes the break between messages
+		for msg_raw in raw.split('\n'):
+			if len(msg_raw) == 0: continue
+			msg = json.loads(msg_raw)
+			# {u'src': u'001C', u'dst': u'0004', u'MID': u'RUOGHAVY5WKOBT4Z', 
+			# u'value': u'cf52a3ceb2de663d19b5516bda582426', u'key': u'VS45EDCU5XSDO3I1MGWQASAW7P31SRJA', 
+			# u'type': u'put', u'leader': u'FFFF'}
+
+			# If we dont have a leader, or if we are the leadr and havent yet processed our messge queue, add this message to queue
+			if (msg['type'] in ['get', 'put'] and (LEADER_ID == None or (STATE is 'Leader' and MESSAGE_QUEUE_CLEARED == False))):
+				timestamp = getTimestamp()
+				if timestamp in MESSAGE_QUEUE:
+					MESSAGE_QUEUE[timestamp].append(msg)
+				MESSAGE_QUEUE[timestamp] = [msg]
+
+			elif msg['type'] in ['get', 'put'] and STATE is not 'Leader':
+				sendRedirectMsg(msg)
+
+			else:
+				# handle a client get request
+				if msg['type'] == 'get':
+					handleClientGet(msg)
+
+				# handle a client put request
+				if msg['type'] == 'put':
+					handleClientPut(msg)
+
+				# new election process
+				if msg['type'] == 'elect':
+					handleElectionMsg(msg)
+
+				# appendRPC message
+				if msg['type'] == 'append':
+					handleAppendMsg(msg)
+
+				# appendRPC Response to leader
+				if msg['type'] == 'appendResponse':
+					handleAppendResponseMsg(msg)
+
+				# handle vote
+				if msg['type'] == 'vote':
+					handleVoteMsg(msg)
+
+	if STATE == 'Leader' and len(GOTTEN_QUEUED_MESSAGES_FROM) == len(replica_ids):
+		emptyMessageQueue()
+		
+	# send heartbeat after every LEADER_HEARTBEAT_RATE
+	if STATE == 'Leader' and getTimestamp() - LEADER_HEARTBEAT_RATE > LAST_SENT_HEARTBEAT:
+		sendAppend()
+

@@ -1,0 +1,242 @@
+#!/usr/bin/python -u
+
+# Eric Ropiak & Yang Yang
+# CS3700
+# Project 3
+# Sender Code
+
+import sys
+import socket
+import time
+import datetime
+import select
+import json
+import zlib
+import random
+
+# Sample Data Message
+# {"s": SEQUENCE, "d": data, c": zlib.crc32(data)}
+# s=sequence, d=data, c = checksum
+
+# Sample EOF Message
+# {"e": SEQUENCE, c": zlib.crc32(data)}
+# e=eof, c = checksum
+
+# Globals
+MSG_SIZE = 1500 #MTU
+DATA_SIZE = 1400 #How many bytes of data to include in each packet
+TIMEOUT = 30 #how long sender should wait without hearing from receiver before shutting down
+SEQUENCE = 0 #where we are in the message we are sending
+SENDING_BUFFER = {} #dictionary mapping sequence number to the message sent at each seq num
+RTT = 500 # set inital rtt to half a second
+RTT_RATIO = 0.8 #alpha value used for recalculating rtt
+SENT_ALL_DATA_ONCE = False #boolean set to true once we have read in all data from buffer
+TIME_OF_LAST_RECEIVED_PACKET = 0 #time (in ms) since we last heard from receiver
+SLIDING_WINDOW = 25 #how many packets to send without being acked
+
+# Bind to localhost and an ephemeral port
+IP_PORT = sys.argv[1]
+UDP_IP = IP_PORT[0:IP_PORT.find(":")]
+UDP_PORT = int(IP_PORT[IP_PORT.find(":")+1:])
+dest = (UDP_IP, UDP_PORT)
+
+# Set up the socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+sock.settimeout(TIMEOUT)
+
+# gives the current time in milliseconds since epoch
+def getTimestamp():
+  return int(time.time() * 1000)
+
+#print string to stderr
+def log(string):
+  sys.stderr.write(datetime.datetime.now().strftime("%H:%M:%S.%f") + " " + string + "\n")
+
+# sends the next packet and add the sent message to the sending buffer (with a timestamp), waiting to be acked
+# if there is no more data to be read in, send message to receiver with full length of message so they know
+# when to stop listening
+def send_next_packet():
+  global SEQUENCE
+  global SENDING_BUFFER
+  global DATA_SIZE
+
+  data = sys.stdin.read(DATA_SIZE)
+  timestamp = getTimestamp()
+  if (len(data) > 0):
+    jsonMsg = add_checksum_to_message({"s": SEQUENCE, "d": data});
+    msg = json.dumps(jsonMsg)
+    #corruptMessage = add_corruption(msg, 50) #corrupt 50% of our messages for testing
+    
+    if sock.sendto(msg, dest) < len(msg): 
+      log("[error] unable to fully send packet")
+    else: #message went thru, add it to sending buffer
+      log("[send data] " + str(SEQUENCE) + " (" + str(len(data)) + ")")
+      SENDING_BUFFER[SEQUENCE] = {"message": jsonMsg, "timeout": timestamp + 2*RTT, "timestamp": timestamp, "duplicates": 0};
+      SEQUENCE += len(data)
+    return True
+ 
+  # send last eof packet
+  elif (not SENT_ALL_DATA_ONCE):
+    jsonMsg = add_checksum_to_message({"e": SEQUENCE})
+    SENDING_BUFFER[SEQUENCE] = {"message": jsonMsg, "timeout": timestamp + 2*RTT, "timestamp": timestamp, "duplicates": 0};
+    log('[sending eof] total length of message: ' + str(SEQUENCE))
+    sock.sendto(json.dumps(jsonMsg), dest)
+
+  return False
+
+# resends message given to it in json form
+def resend_packet(msg):
+  logMsg = None
+  if 's' in msg:
+    logMsg = "[resending data] " + str(msg['s']) + " (" + str(len(msg['d'])) + ")"
+  else:
+    logMsg = "[resending eof] " + str(msg['e'])
+
+  if sock.sendto(json.dumps(msg), dest) < len(msg):
+    log("[error] unable to fully send packet")
+  else:
+    log(logMsg)
+
+
+def check_timeouts():
+  global SENDING_BUFFER
+  global SENT_ALL_DATA_ONCE
+
+  if(len(SENDING_BUFFER) == 0 and SENT_ALL_DATA_ONCE): # we've sent all data once and there is nothing left to be acked
+    return False
+
+  for key in SENDING_BUFFER:
+    bufferedMsg = SENDING_BUFFER[key]
+    if (getTimestamp() > bufferedMsg['timeout'] or bufferedMsg['duplicates'] >= 3): # message has timed out
+      #resend packet
+      resend_packet(bufferedMsg['message'])
+      #reset timeout values
+      SENDING_BUFFER[key]['timeout'] = getTimestamp() + 2*RTT
+      SENDING_BUFFER[key]['duplicates'] = 0
+
+  return True
+
+#dynamically recalculate our rtt as we receive packets
+def updateRTT(ack):
+  global SENDING_BUFFER
+  global RTT
+
+  RTT = RTT_RATIO*RTT + (1-RTT_RATIO)*(getTimestamp() - SENDING_BUFFER[ack]['timestamp'])
+  log('Last packet time: ' + str(getTimestamp() - SENDING_BUFFER[ack]['timestamp']) + ' ||| RTT: ' + str(RTT))
+
+
+#handle an incomiong ack, by removing acked packets from sending buffer
+def handle_ack(ack):
+  global SENDING_BUFFER
+
+  # packet was received so we can delete it from buffer
+  ack_of_sent = ack["a"]
+  if (ack_of_sent in SENDING_BUFFER.keys()):
+    updateRTT(ack_of_sent)
+    del SENDING_BUFFER[ack_of_sent]
+
+  # previous packet was received so we can delete it from buffer
+  if (ack['l']):
+    last_acked = ack['l']
+    if (last_acked in SENDING_BUFFER.keys()):
+      del SENDING_BUFFER[last_acked]
+      #we can send next packet because its ack was lost and we want to maintain sliding window
+      send_next_packet()
+
+  for key in SENDING_BUFFER.keys():
+    if (key < ack_of_sent): # a latter packet was received before these
+      SENDING_BUFFER[key]['duplicates'] += 1
+    if (key < ack['b']): # receiver has already added this part of message
+      del SENDING_BUFFER[key]
+
+#checks to see if a message is corrupt, returns true if it isnt
+def is_not_corrupt(dataString):
+  try:
+    dataJson = json.loads(dataString)
+    messageInfo = {}
+    checksum = None
+    #copy all none checksum data into object, then compute checksum of that object and see if it matches provded checksum
+    for key in dataJson:
+      if (key == 'c'):
+        checksum = dataJson[key]
+      else:
+        messageInfo[key] = dataJson[key]
+    localChecksum = zlib.crc32(json.dumps(messageInfo))
+    return checksum and localChecksum and checksum == localChecksum
+  except (ValueError, KeyError, TypeError) as e:
+    return False
+
+# takes in a json message, computes its checksum, adds the checksum to the object then returns it
+def add_checksum_to_message(jsonMessage):
+  stringMessage = json.dumps(jsonMessage)
+  checksum = zlib.crc32(stringMessage)
+  jsonMessage['c'] = checksum
+  return jsonMessage
+
+#used for testing only, corrupts a byte in corruptPercent of packets
+def add_corruption(stringMessage, corruptPercent):
+  if (random.random()* 100 <= corruptPercent):
+    listMessage = list(stringMessage)
+    listMessage[int(random.random() * len(listMessage))] = random.choice(string.letters) #overwrite random part of message
+    return "".join(listMessage)
+  else:
+    return stringMessage
+
+# Send first packets
+def send_initial_packets():
+  global SENT_ALL_DATA_ONCE
+
+  for i in range (0, SLIDING_WINDOW):
+    if (not send_next_packet()):
+      SENT_ALL_DATA_ONCE = True
+    
+
+send_initial_packets()
+TIME_OF_LAST_RECEIVED_PACKET = getTimestamp()
+
+# Now read in data, send packets
+while True:
+
+  ready, ignore, ignore2 = select.select([sock], [], [], 0.1)
+
+  #we have an incoming message
+  if (ready):
+
+    #update time of last recieved packet to current time
+    TIME_OF_LAST_RECEIVED_PACKET = getTimestamp()
+    for socket in ready:
+      #load the data
+      data = socket.recv(MSG_SIZE)
+
+      #check for corruption
+      if (is_not_corrupt(data)):
+        
+        decoded = json.loads(data)
+
+        if ("k" in decoded): #received kill message, shut down
+          log('[send completed]')
+          sys.exit(0)
+
+        # If there is an ack, send next packet
+        if decoded["a"] != None:
+          log("[recv ack] " + str(decoded["a"]))
+          handle_ack(decoded)
+
+          # Try to send next packet; break if no more data
+          if (not send_next_packet()):
+            SENT_ALL_DATA_ONCE = True
+            break
+      else:
+        log("[recv corrupt packet]")
+        log(data)
+
+  #check to see if we've timed out
+  elif(getTimestamp() - TIME_OF_LAST_RECEIVED_PACKET > (TIMEOUT * 1000)): #We haven't received a message in more than TIMEOUT seconds
+    log("sender timeout")
+    sys.exit(-1)
+
+  #check to see if any of our sent packets have timed out
+  elif (not check_timeouts()): #nothing left for us to do
+    break
+
+sys.exit(0)
