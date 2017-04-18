@@ -1,0 +1,39 @@
+sudo apt-get install python-pip
+Successfully installed pip-9.0.1
+root@ubuntu:/home/umakant# pip install CoAPthon
+Requirement already satisfied: CoAPthon in /usr/local/lib/python2.7/dist-packages
+
+https://github.com/Tanganelli/CoAPthon/issues/27
+
+coapclient.py -o GET -p coap://192.168.43.57:5683/Voltage
+
+coapserver.py
+
+fuser -n udp -k 5683
+ps aux | grep python | grep -v "grep python" | awk '{print $2}' | xargs kill -9
+
+sh -x runserver.sh & sh -x run.sh
+	
+for i in {1..10}; do sh -x runserver.sh & sh -x run.sh ; sleep 0.02; done
+watch -n 0.020 'sh -x runserver.sh & sh -x run.sh'
+while true; do sh -x runserver.sh & sh -x run.sh ; sleep 0.020; done	
+
+gcc run.c -o run1
+gcc run.c -std=gnu99 -o run1
+./run1
+
+watch -n 0.001 'sh -x runserver.sh & sh -x run3.sh'
+while true; do sh -x runserver.sh & sh -x run3.sh ; sleep 0.001; done
+
+def main():    
+    # i as interval in seconds    
+    #threading.Timer(0.020, main).start()    
+    # put your action here
+    #looper()
+    tstep = datetime.timedelta(seconds=0.020)
+    tnext = datetime.datetime.now() + tstep
+    while True:
+    	looper()
+    	tdiff = tnext - datetime.datetime.now()
+	time.sleep(tdiff.total_seconds())
+    	tnext = tnext + tstep

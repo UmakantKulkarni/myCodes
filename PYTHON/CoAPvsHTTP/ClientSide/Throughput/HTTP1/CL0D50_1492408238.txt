@@ -1,0 +1,18 @@
+qdisc noqueue 0: dev lo root refcnt 2 
+ Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0 
+qdisc pfifo_fast 0: dev ens33 root refcnt 2 bands 3 priomap  1 2 2 2 1 2 0 0 1 1 1 1 1 1 1 1
+ Sent 1363312 bytes 15542 pkt (dropped 0, overlimits 0 requeues 1) 
+ backlog 0b 0p requeues 1 
+qdisc netem 8006: dev ens38 root refcnt 2 limit 1000 delay 50.0ms
+ Sent 832740 bytes 10828 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 130b 1p requeues 0 
+qdisc noqueue 0: dev lo root refcnt 2 
+ Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0 
+qdisc pfifo_fast 0: dev ens33 root refcnt 2 bands 3 priomap  1 2 2 2 1 2 0 0 1 1 1 1 1 1 1 1
+ Sent 1364686 bytes 15559 pkt (dropped 0, overlimits 0 requeues 1) 
+ backlog 0b 0p requeues 1 
+qdisc netem 8006: dev ens38 root refcnt 2 limit 1000 delay 50.0ms
+ Sent 1613658 bytes 20894 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0 
