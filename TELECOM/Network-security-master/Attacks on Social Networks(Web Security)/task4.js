@@ -1,1 +1,0 @@
-alert("XSS seed lab task 4");
